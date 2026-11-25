@@ -42,14 +42,99 @@
 <span class="pill">Admin Portal</span>
 </div>
 
+<section class="panel" id="jobFormPanel">
+
+<h3 id="formHeading">Create New Job Vacancy</h3>
+
+<form id="jobForm">
+
+<input type="hidden" id="jobId">
+
+<div style="margin-bottom:14px">
+<label for="jobTitle">Job Title *</label>
+<input id="jobTitle" type="text" required maxlength="150"
+placeholder="e.g. Primary School Teacher"
+style="width:100%;padding:12px;margin-top:6px">
+</div>
+
+<div style="margin-bottom:14px">
+<label for="department">Department *</label>
+<input id="department" type="text" required maxlength="100"
+placeholder="e.g. Teaching / Administration"
+style="width:100%;padding:12px;margin-top:6px">
+</div>
+
+<div style="margin-bottom:14px">
+<label for="location">Location *</label>
+<input id="location" type="text" required maxlength="150"
+placeholder="e.g. Mumbai, Maharashtra"
+style="width:100%;padding:12px;margin-top:6px">
+</div>
+
+<div style="margin-bottom:14px">
+<label for="employmentType">Employment Type *</label>
+<select id="employmentType" required
+style="width:100%;padding:12px;margin-top:6px">
+<option value="">Select Employment Type</option>
+<option value="Full Time">Full Time</option>
+<option value="Part Time">Part Time</option>
+<option value="Contract">Contract</option>
+<option value="Temporary">Temporary</option>
+<option value="Internship">Internship</option>
+</select>
+</div>
+
+<div style="margin-bottom:14px">
+<label for="qualification">Required Qualification *</label>
+<textarea id="qualification" required maxlength="2000"
+placeholder="Enter required education and qualifications"
+rows="3"
+style="width:100%;padding:12px;margin-top:6px"></textarea>
+</div>
+
+<div style="margin-bottom:14px">
+<label for="description">Job Description *</label>
+<textarea id="description" required maxlength="10000"
+placeholder="Enter job responsibilities, experience and other details"
+rows="6"
+style="width:100%;padding:12px;margin-top:6px"></textarea>
+</div>
+
+<div style="margin-bottom:18px">
+<label for="jobStatus">Job Status *</label>
+<select id="jobStatus" required
+style="width:100%;padding:12px;margin-top:6px">
+<option value="draft">Draft</option>
+<option value="published">Published</option>
+<option value="closed">Closed</option>
+</select>
+</div>
+
+<button type="submit" id="saveJobButton">Save Job</button>
+
+<button type="button" id="cancelEditButton"
+style="margin-left:8px;display:none">
+Cancel Edit
+</button>
+
+<p id="formMessage" class="muted" aria-live="polite"></p>
+
+</form>
+
+</section>
+
 <section class="panel">
 
-<h3>Job Management</h3>
+<h3>All Job Vacancies</h3>
+
+<p id="jobCount" class="muted">Loading jobs...</p>
+
+<div style="overflow-x:auto">
 
 <table>
 <thead>
 <tr>
-<th>Job title</th>
+<th>Job Title</th>
 <th>Department</th>
 <th>Location</th>
 <th>Status</th>
@@ -57,19 +142,20 @@
 </tr>
 </thead>
 
-<tbody>
+<tbody id="jobsTable">
 <tr>
-<td colspan="5" class="muted">
-No live records. Job database integration is pending.
-</td>
+<td colspan="5" class="muted">Loading job records...</td>
 </tr>
 </tbody>
 </table>
 
+</div>
+
 </section>
 
 <div class="notice">
-Administrator access is protected through Firebase Authentication and Firestore role verification.
+Job records are managed through Firebase Firestore.
+Published jobs can be displayed on the public Jobs page after its integration.
 </div>
 
 </main>
@@ -88,7 +174,13 @@ import {
 
 import {
   doc,
-  getDoc
+  getDoc,
+  collection,
+  getDocs,
+  addDoc,
+  updateDoc,
+  deleteDoc,
+  serverTimestamp
 } from "https://www.gstatic.com/firebasejs/13.4.0/firebase-firestore.js";
 
 const allowedRoles = [
@@ -100,16 +192,354 @@ const allowedRoles = [
   "viewer"
 ];
 
+// Only these roles can manage job records in this interface.
+const writeRoles = [
+  "super_admin",
+  "admin",
+  "recruitment_manager"
+];
+
 const welcome = document.getElementById("adminWelcome");
 const logoutButton = document.getElementById("logoutButton");
+const jobForm = document.getElementById("jobForm");
+const jobsTable = document.getElementById("jobsTable");
+const jobCount = document.getElementById("jobCount");
+const formMessage = document.getElementById("formMessage");
+const saveButton = document.getElementById("saveJobButton");
+const cancelButton = document.getElementById("cancelEditButton");
+const formHeading = document.getElementById("formHeading");
+
+let jobs = [];
+let currentAdminRole = null;
 
 document.body.style.display = "none";
 
+// Escape-safe DOM helper
+function addCell(row, value) {
+
+  const cell = document.createElement("td");
+  cell.textContent = value || "—";
+  row.appendChild(cell);
+
+  return cell;
+
+}
+
+// Load jobs from Firestore
+async function loadJobs() {
+
+  jobCount.textContent = "Loading job records...";
+
+  try {
+
+    const snapshot = await getDocs(collection(db, "jobs"));
+
+    jobs = snapshot.docs.map(item => ({
+      id: item.id,
+      ...item.data()
+    }));
+
+    jobs.sort((a, b) => {
+
+      const dateA = a.createdAt?.toMillis
+        ? a.createdAt.toMillis()
+        : 0;
+
+      const dateB = b.createdAt?.toMillis
+        ? b.createdAt.toMillis()
+        : 0;
+
+      return dateB - dateA;
+
+    });
+
+    jobCount.textContent =
+      "Total job vacancies: " + jobs.length.toLocaleString("en-IN");
+
+    renderJobs();
+
+  } catch (error) {
+
+    console.error("Job loading error:", error);
+
+    jobCount.textContent =
+      "Unable to load jobs. Check Firestore permissions.";
+
+    jobsTable.replaceChildren();
+
+    const row = document.createElement("tr");
+    const cell = document.createElement("td");
+
+    cell.colSpan = 5;
+    cell.textContent = "Error loading job records.";
+
+    row.appendChild(cell);
+    jobsTable.appendChild(row);
+
+  }
+
+}
+
+// Render job list
+function renderJobs() {
+
+  jobsTable.replaceChildren();
+
+  if (jobs.length === 0) {
+
+    const row = document.createElement("tr");
+    const cell = document.createElement("td");
+
+    cell.colSpan = 5;
+    cell.textContent = "No job vacancies found.";
+
+    row.appendChild(cell);
+    jobsTable.appendChild(row);
+
+    return;
+  }
+
+  jobs.forEach(job => {
+
+    const row = document.createElement("tr");
+
+    addCell(row, job.jobTitle);
+    addCell(row, job.department);
+    addCell(row, job.location);
+    addCell(row, job.status);
+
+    const actionCell = document.createElement("td");
+
+    const viewButton = document.createElement("button");
+    viewButton.type = "button";
+    viewButton.textContent = "View";
+
+    viewButton.addEventListener("click", () => {
+      viewJob(job);
+    });
+
+    actionCell.appendChild(viewButton);
+
+    if (writeRoles.includes(currentAdminRole)) {
+
+      const editButton = document.createElement("button");
+
+      editButton.type = "button";
+      editButton.textContent = "Edit";
+      editButton.style.marginLeft = "5px";
+
+      editButton.addEventListener("click", () => {
+        editJob(job);
+      });
+
+      actionCell.appendChild(editButton);
+
+      const deleteButton = document.createElement("button");
+
+      deleteButton.type = "button";
+      deleteButton.textContent = "Delete";
+      deleteButton.style.marginLeft = "5px";
+
+      deleteButton.addEventListener("click", () => {
+        removeJob(job);
+      });
+
+      actionCell.appendChild(deleteButton);
+
+    }
+
+    row.appendChild(actionCell);
+    jobsTable.appendChild(row);
+
+  });
+
+}
+
+// View job details
+function viewJob(job) {
+
+  alert(
+    "Job Title: " + (job.jobTitle || "—") +
+    "\nDepartment: " + (job.department || "—") +
+    "\nLocation: " + (job.location || "—") +
+    "\nEmployment Type: " + (job.employmentType || "—") +
+    "\nQualification: " + (job.qualification || "—") +
+    "\nStatus: " + (job.status || "—") +
+    "\n\nDescription:\n" + (job.description || "—")
+  );
+
+}
+
+// Reset form
+function resetJobForm() {
+
+  jobForm.reset();
+
+  document.getElementById("jobId").value = "";
+
+  formHeading.textContent = "Create New Job Vacancy";
+  saveButton.textContent = "Save Job";
+
+  cancelButton.style.display = "none";
+
+  formMessage.textContent = "";
+
+}
+
+// Edit job
+function editJob(job) {
+
+  if (!writeRoles.includes(currentAdminRole)) return;
+
+  document.getElementById("jobId").value = job.id;
+  document.getElementById("jobTitle").value = job.jobTitle || "";
+  document.getElementById("department").value = job.department || "";
+  document.getElementById("location").value = job.location || "";
+  document.getElementById("employmentType").value = job.employmentType || "";
+  document.getElementById("qualification").value = job.qualification || "";
+  document.getElementById("description").value = job.description || "";
+  document.getElementById("jobStatus").value = job.status || "draft";
+
+  formHeading.textContent = "Edit Job Vacancy";
+  saveButton.textContent = "Update Job";
+  cancelButton.style.display = "inline-block";
+
+  document.getElementById("jobFormPanel").scrollIntoView({
+    behavior: "smooth",
+    block: "start"
+  });
+
+}
+
+// Delete job
+async function removeJob(job) {
+
+  if (!writeRoles.includes(currentAdminRole)) return;
+
+  const confirmed = confirm(
+    "Are you sure you want to delete this job vacancy?\n\n" +
+    (job.jobTitle || "Selected Job")
+  );
+
+  if (!confirmed) return;
+
+  try {
+
+    await deleteDoc(doc(db, "jobs", job.id));
+
+    alert("Job deleted successfully.");
+
+    await loadJobs();
+
+  } catch (error) {
+
+    console.error("Job deletion error:", error);
+
+    alert("Unable to delete job. Check Firestore permissions.");
+
+  }
+
+}
+
+// Save or update job
+jobForm.addEventListener("submit", async (event) => {
+
+  event.preventDefault();
+
+  if (!writeRoles.includes(currentAdminRole)) {
+
+    formMessage.textContent = "You do not have permission to manage jobs.";
+    return;
+
+  }
+
+  const jobId = document.getElementById("jobId").value;
+
+  const jobData = {
+
+    jobTitle: document.getElementById("jobTitle").value.trim(),
+    department: document.getElementById("department").value.trim(),
+    location: document.getElementById("location").value.trim(),
+    employmentType: document.getElementById("employmentType").value,
+    qualification: document.getElementById("qualification").value.trim(),
+    description: document.getElementById("description").value.trim(),
+    status: document.getElementById("jobStatus").value,
+
+    updatedAt: serverTimestamp()
+
+  };
+
+  if (
+    !jobData.jobTitle ||
+    !jobData.department ||
+    !jobData.location ||
+    !jobData.employmentType ||
+    !jobData.qualification ||
+    !jobData.description
+  ) {
+
+    formMessage.textContent = "Please complete all required fields.";
+    return;
+
+  }
+
+  saveButton.disabled = true;
+  formMessage.textContent = "Saving job...";
+
+  try {
+
+    if (jobId) {
+
+      await updateDoc(
+        doc(db, "jobs", jobId),
+        jobData
+      );
+
+      formMessage.textContent = "Job updated successfully.";
+
+    } else {
+
+      jobData.createdAt = serverTimestamp();
+
+      await addDoc(
+        collection(db, "jobs"),
+        jobData
+      );
+
+      formMessage.textContent = "New job created successfully.";
+
+    }
+
+    resetJobForm();
+
+    await loadJobs();
+
+  } catch (error) {
+
+    console.error("Job save error:", error);
+
+    formMessage.textContent =
+      "Unable to save job. Check Firestore permissions.";
+
+  } finally {
+
+    saveButton.disabled = false;
+
+  }
+
+});
+
+// Cancel edit
+cancelButton.addEventListener("click", resetJobForm);
+
+// Verify admin
 onAuthStateChanged(auth, async (user) => {
 
   if (!user) {
+
     window.location.replace("../login.html");
     return;
+
   }
 
   try {
@@ -118,9 +548,11 @@ onAuthStateChanged(auth, async (user) => {
     const adminSnap = await getDoc(adminRef);
 
     if (!adminSnap.exists()) {
+
       await signOut(auth);
       window.location.replace("../login.html");
       return;
+
     }
 
     const adminData = adminSnap.data();
@@ -129,36 +561,55 @@ onAuthStateChanged(auth, async (user) => {
       adminData.status !== "active" ||
       !allowedRoles.includes(adminData.role)
     ) {
+
       await signOut(auth);
       window.location.replace("../login.html");
       return;
+
     }
 
+    currentAdminRole = adminData.role;
+
     welcome.textContent =
-      "Welcome, " + (adminData.fullName || user.displayName || "Administrator");
+      "Welcome, " +
+      (adminData.fullName || user.displayName || "Administrator");
+
+    // Hide editing form from read-only roles
+    if (!writeRoles.includes(currentAdminRole)) {
+
+      document.getElementById("jobFormPanel").hidden = true;
+
+    }
 
     document.body.style.display = "";
+
+    await loadJobs();
 
   } catch (error) {
 
     console.error("Admin verification error:", error);
-    welcome.textContent = "Unable to verify administrator access.";
-    document.body.style.display = "";
+
+    window.location.replace("../login.html");
 
   }
 
 });
 
+// Sign out
 logoutButton.addEventListener("click", async (event) => {
 
   event.preventDefault();
 
   try {
+
     await signOut(auth);
     window.location.replace("../login.html");
+
   } catch (error) {
+
     alert("Sign out failed. Please try again.");
     console.error(error);
+
   }
 
 });
