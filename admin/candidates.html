@@ -43,32 +43,63 @@
 </div>
 
 <section class="panel">
-<h3>Candidate Management</h3>
+
+<h3>Registered Candidates</h3>
+
+<p class="muted" id="candidateCount">Loading candidates...</p>
+
+<div style="margin:15px 0">
+<input
+type="search"
+id="candidateSearch"
+placeholder="Search by name, email or mobile..."
+style="width:100%;padding:12px;border:1px solid #ccc;border-radius:6px;"
+>
+</div>
+
+<div style="overflow-x:auto">
 
 <table>
 <thead>
 <tr>
 <th>Candidate</th>
 <th>Email</th>
+<th>Mobile</th>
 <th>Department</th>
-<th>Profile status</th>
+<th>Profile Status</th>
+<th>Registered On</th>
 <th>Action</th>
 </tr>
 </thead>
 
-<tbody>
+<tbody id="candidateTable">
+
 <tr>
-<td colspan="5" class="muted">
-No live records. Candidate database integration is pending.
-</td>
+<td colspan="7" class="muted">Loading candidate records...</td>
 </tr>
+
 </tbody>
 </table>
+
+</div>
+
+</section>
+
+<section class="panel" id="candidateDetails" hidden>
+
+<h3>Candidate Profile Details</h3>
+
+<div id="candidateProfileInfo"></div>
+
+<button type="button" id="closeProfile" style="margin-top:15px">
+Close Profile
+</button>
 
 </section>
 
 <div class="notice">
-Administrator access is protected through Firebase Authentication and Firestore role verification.
+Candidate information is retrieved from Firebase Firestore.
+Only authorized administrators should access candidate records.
 </div>
 
 </main>
@@ -87,7 +118,9 @@ import {
 
 import {
   doc,
-  getDoc
+  getDoc,
+  collection,
+  getDocs
 } from "https://www.gstatic.com/firebasejs/13.4.0/firebase-firestore.js";
 
 const allowedRoles = [
@@ -101,9 +134,226 @@ const allowedRoles = [
 
 const welcome = document.getElementById("adminWelcome");
 const logoutButton = document.getElementById("logoutButton");
+const candidateTable = document.getElementById("candidateTable");
+const candidateCount = document.getElementById("candidateCount");
+const searchInput = document.getElementById("candidateSearch");
+const detailsSection = document.getElementById("candidateDetails");
+const profileInfo = document.getElementById("candidateProfileInfo");
+
+let candidates = [];
 
 document.body.style.display = "none";
 
+// Safe text display
+function addDetail(container, label, value) {
+
+  const paragraph = document.createElement("p");
+  const strong = document.createElement("strong");
+
+  strong.textContent = label + ": ";
+
+  paragraph.appendChild(strong);
+  paragraph.appendChild(
+    document.createTextNode(value || "—")
+  );
+
+  container.appendChild(paragraph);
+}
+
+// Format registration date
+function formatDate(value) {
+
+  if (!value) return "—";
+
+  const date = value.toDate
+    ? value.toDate()
+    : new Date(value);
+
+  if (isNaN(date.getTime())) return "—";
+
+  return date.toLocaleDateString("en-IN");
+
+}
+
+// View candidate profile
+function viewCandidate(candidate) {
+
+  profileInfo.replaceChildren();
+
+  addDetail(profileInfo, "Full Name", candidate.fullName);
+  addDetail(profileInfo, "Email", candidate.email);
+  addDetail(profileInfo, "Mobile", candidate.mobile);
+  addDetail(profileInfo, "Department", candidate.department);
+  addDetail(profileInfo, "Profile Status", candidate.status);
+  addDetail(profileInfo, "Qualification", candidate.qualification);
+  addDetail(profileInfo, "Experience", candidate.experience);
+  addDetail(profileInfo, "Location", candidate.location);
+  addDetail(profileInfo, "Registration Date", formatDate(candidate.createdAt));
+  addDetail(profileInfo, "Firebase User ID", candidate.userId);
+
+  detailsSection.hidden = false;
+
+  detailsSection.scrollIntoView({
+    behavior: "smooth",
+    block: "start"
+  });
+
+}
+
+// Render candidate table
+function renderCandidates(list) {
+
+  candidateTable.replaceChildren();
+
+  if (list.length === 0) {
+
+    const row = document.createElement("tr");
+    const cell = document.createElement("td");
+
+    cell.colSpan = 7;
+    cell.className = "muted";
+    cell.textContent = "No candidate records found.";
+
+    row.appendChild(cell);
+    candidateTable.appendChild(row);
+
+    return;
+  }
+
+  list.forEach(candidate => {
+
+    const row = document.createElement("tr");
+
+    const values = [
+      candidate.fullName || "—",
+      candidate.email || "—",
+      candidate.mobile || "—",
+      candidate.department || "—",
+      candidate.status || "—",
+      formatDate(candidate.createdAt)
+    ];
+
+    values.forEach(value => {
+
+      const cell = document.createElement("td");
+      cell.textContent = value;
+      row.appendChild(cell);
+
+    });
+
+    const actionCell = document.createElement("td");
+    const viewButton = document.createElement("button");
+
+    viewButton.type = "button";
+    viewButton.textContent = "View Profile";
+
+    viewButton.addEventListener("click", () => {
+      viewCandidate(candidate);
+    });
+
+    actionCell.appendChild(viewButton);
+    row.appendChild(actionCell);
+
+    candidateTable.appendChild(row);
+
+  });
+
+}
+
+// Search candidates
+searchInput.addEventListener("input", () => {
+
+  const term = searchInput.value.trim().toLowerCase();
+
+  const filtered = candidates.filter(candidate => {
+
+    return [
+      candidate.fullName,
+      candidate.email,
+      candidate.mobile,
+      candidate.department
+    ].some(value =>
+      String(value || "").toLowerCase().includes(term)
+    );
+
+  });
+
+  renderCandidates(filtered);
+
+  candidateCount.textContent =
+    "Showing " + filtered.length +
+    " of " + candidates.length + " candidates";
+
+});
+
+// Load candidates from Firestore
+async function loadCandidates() {
+
+  candidateCount.textContent = "Loading candidate records...";
+
+  try {
+
+    const snapshot = await getDocs(
+      collection(db, "candidates")
+    );
+
+    candidates = snapshot.docs.map(document => ({
+      id: document.id,
+      ...document.data()
+    }));
+
+    // Sort newest first
+    candidates.sort((a, b) => {
+
+      const dateA = a.createdAt?.toMillis
+        ? a.createdAt.toMillis()
+        : 0;
+
+      const dateB = b.createdAt?.toMillis
+        ? b.createdAt.toMillis()
+        : 0;
+
+      return dateB - dateA;
+
+    });
+
+    candidateCount.textContent =
+      "Total registered candidates: " +
+      candidates.length.toLocaleString("en-IN");
+
+    renderCandidates(candidates);
+
+  } catch (error) {
+
+    console.error("Candidate loading error:", error);
+
+    candidateCount.textContent =
+      "Unable to load candidate records. Check Firestore permissions.";
+
+    candidateTable.replaceChildren();
+
+    const row = document.createElement("tr");
+    const cell = document.createElement("td");
+
+    cell.colSpan = 7;
+    cell.textContent = "Error loading candidate records.";
+
+    row.appendChild(cell);
+    candidateTable.appendChild(row);
+
+  }
+
+}
+
+// Close profile
+document.getElementById("closeProfile")
+.addEventListener("click", () => {
+
+  detailsSection.hidden = true;
+
+});
+
+// Admin verification
 onAuthStateChanged(auth, async (user) => {
 
   if (!user) {
@@ -128,36 +378,46 @@ onAuthStateChanged(auth, async (user) => {
       adminData.status !== "active" ||
       !allowedRoles.includes(adminData.role)
     ) {
+
       await signOut(auth);
       window.location.replace("../login.html");
       return;
+
     }
 
     welcome.textContent =
-      "Welcome, " + (adminData.fullName || user.displayName || "Administrator");
+      "Welcome, " +
+      (adminData.fullName || user.displayName || "Administrator");
 
     document.body.style.display = "";
+
+    await loadCandidates();
 
   } catch (error) {
 
     console.error("Admin verification error:", error);
-    welcome.textContent = "Unable to verify administrator access.";
-    document.body.style.display = "";
+
+    window.location.replace("../login.html");
 
   }
 
 });
 
+// Sign out
 logoutButton.addEventListener("click", async (event) => {
 
   event.preventDefault();
 
   try {
+
     await signOut(auth);
     window.location.replace("../login.html");
+
   } catch (error) {
+
     alert("Sign out failed. Please try again.");
     console.error(error);
+
   }
 
 });
