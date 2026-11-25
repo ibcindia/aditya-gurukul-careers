@@ -44,7 +44,20 @@
 
 <section class="panel">
 
-<h3>Applications Management</h3>
+<h3>Applications Received</h3>
+
+<p id="applicationCount" class="muted">Loading applications...</p>
+
+<div style="margin:15px 0">
+<input
+type="search"
+id="applicationSearch"
+placeholder="Search candidate, job title or application ID..."
+style="width:100%;padding:12px;border:1px solid #ccc;border-radius:6px;"
+>
+</div>
+
+<div style="overflow-x:auto">
 
 <table>
 <thead>
@@ -54,22 +67,36 @@
 <th>Position</th>
 <th>Submitted</th>
 <th>Status</th>
+<th>Action</th>
 </tr>
 </thead>
 
-<tbody>
+<tbody id="applicationsTable">
 <tr>
-<td colspan="5" class="muted">
-No live records. Application database integration is pending.
-</td>
+<td colspan="6" class="muted">Loading application records...</td>
 </tr>
 </tbody>
 </table>
 
+</div>
+
+</section>
+
+<section class="panel" id="applicationDetails" hidden>
+
+<h3>Application Details</h3>
+
+<div id="applicationProfileInfo"></div>
+
+<button type="button" id="closeDetails" style="margin-top:15px">
+Close Details
+</button>
+
 </section>
 
 <div class="notice">
-Administrator access is protected through Firebase Authentication and Firestore role verification.
+Applications are retrieved from Firebase Firestore.
+Only authorized administrators should access candidate application information.
 </div>
 
 </main>
@@ -88,7 +115,11 @@ import {
 
 import {
   doc,
-  getDoc
+  getDoc,
+  collection,
+  getDocs,
+  updateDoc,
+  serverTimestamp
 } from "https://www.gstatic.com/firebasejs/13.4.0/firebase-firestore.js";
 
 const allowedRoles = [
@@ -100,16 +131,435 @@ const allowedRoles = [
   "viewer"
 ];
 
+const writeRoles = [
+  "super_admin",
+  "admin",
+  "recruitment_manager"
+];
+
+const statusOptions = [
+  { value: "submitted", label: "Submitted" },
+  { value: "under_review", label: "Under Review" },
+  { value: "shortlisted", label: "Shortlisted" },
+  { value: "rejected", label: "Rejected" },
+  { value: "selected", label: "Selected" }
+];
+
 const welcome = document.getElementById("adminWelcome");
 const logoutButton = document.getElementById("logoutButton");
+const applicationsTable = document.getElementById("applicationsTable");
+const applicationCount = document.getElementById("applicationCount");
+const searchInput = document.getElementById("applicationSearch");
+const detailsSection = document.getElementById("applicationDetails");
+const detailsInfo = document.getElementById("applicationProfileInfo");
 
+let applications = [];
+let candidates = [];
+let currentAdminRole = null;
+
+// Hide page until administrator verification
 document.body.style.display = "none";
 
+// Format Firestore date
+function formatDate(value) {
+
+  if (!value) return "—";
+
+  const date = value.toDate
+    ? value.toDate()
+    : new Date(value);
+
+  if (isNaN(date.getTime())) return "—";
+
+  return date.toLocaleString("en-IN");
+
+}
+
+// Display safe text
+function addDetail(container, label, value) {
+
+  const paragraph = document.createElement("p");
+  const strong = document.createElement("strong");
+
+  strong.textContent = label + ": ";
+
+  paragraph.appendChild(strong);
+  paragraph.appendChild(
+    document.createTextNode(value || "—")
+  );
+
+  container.appendChild(paragraph);
+
+}
+
+// Find candidate details
+function findCandidate(application) {
+
+  return candidates.find(candidate =>
+    (application.candidateId &&
+      candidate.id === application.candidateId) ||
+    (application.userId &&
+      candidate.userId === application.userId)
+  );
+
+}
+
+// Convert status to display text
+function displayStatus(status) {
+
+  const option = statusOptions.find(item => item.value === status);
+
+  return option ? option.label : (status || "—");
+
+}
+
+// View application details
+function viewApplication(application) {
+
+  detailsInfo.replaceChildren();
+
+  const candidate = findCandidate(application);
+
+  addDetail(detailsInfo, "Application ID", application.id);
+  addDetail(detailsInfo, "Candidate Name",
+    candidate?.fullName || application.fullName);
+  addDetail(detailsInfo, "Email",
+    candidate?.email || application.email);
+  addDetail(detailsInfo, "Mobile",
+    candidate?.mobile || application.mobile);
+  addDetail(detailsInfo, "Position", application.jobTitle);
+  addDetail(detailsInfo, "Job ID", application.jobId);
+  addDetail(detailsInfo, "Application Status",
+    displayStatus(application.status));
+  addDetail(detailsInfo, "Applied On",
+    formatDate(application.appliedAt));
+
+  if (candidate) {
+
+    addDetail(detailsInfo, "Department", candidate.department);
+    addDetail(detailsInfo, "Qualification", candidate.qualification);
+    addDetail(detailsInfo, "Experience", candidate.experience);
+    addDetail(detailsInfo, "Location", candidate.location);
+
+  }
+
+  addDetail(detailsInfo, "Candidate User ID", application.userId);
+
+  detailsSection.hidden = false;
+
+  detailsSection.scrollIntoView({
+    behavior: "smooth",
+    block: "start"
+  });
+
+}
+
+// Update application status
+async function changeStatus(application, newStatus, button) {
+
+  if (!writeRoles.includes(currentAdminRole)) return;
+
+  if (!statusOptions.some(item => item.value === newStatus)) return;
+
+  const confirmed = confirm(
+    "Change application status to " +
+    displayStatus(newStatus) + "?"
+  );
+
+  if (!confirmed) {
+
+    renderApplications(
+      getFilteredApplications()
+    );
+
+    return;
+
+  }
+
+  button.disabled = true;
+  button.textContent = "Saving...";
+
+  try {
+
+    await updateDoc(
+      doc(db, "applications", application.id),
+      {
+        status: newStatus,
+        updatedAt: serverTimestamp()
+      }
+    );
+
+    application.status = newStatus;
+
+    applicationCount.textContent =
+      "Total applications: " + applications.length;
+
+    renderApplications(getFilteredApplications());
+
+    alert("Application status updated successfully.");
+
+  } catch (error) {
+
+    console.error("Status update error:", error);
+
+    alert("Unable to update status. Check Firestore permissions.");
+
+    renderApplications(getFilteredApplications());
+
+  }
+
+}
+
+// Render applications
+function renderApplications(list) {
+
+  applicationsTable.replaceChildren();
+
+  if (list.length === 0) {
+
+    const row = document.createElement("tr");
+    const cell = document.createElement("td");
+
+    cell.colSpan = 6;
+    cell.className = "muted";
+    cell.textContent = "No application records found.";
+
+    row.appendChild(cell);
+    applicationsTable.appendChild(row);
+
+    return;
+
+  }
+
+  list.forEach(application => {
+
+    const row = document.createElement("tr");
+
+    const candidate = findCandidate(application);
+
+    const candidateName =
+      candidate?.fullName ||
+      application.fullName ||
+      "—";
+
+    const jobTitle =
+      application.jobTitle || "—";
+
+    const appliedDate =
+      formatDate(application.appliedAt);
+
+    const idText = application.id.length > 12
+      ? application.id.substring(0, 12) + "..."
+      : application.id;
+
+    const idCell = document.createElement("td");
+    idCell.textContent = idText;
+    idCell.title = application.id;
+    row.appendChild(idCell);
+
+    const candidateCell = document.createElement("td");
+    candidateCell.textContent = candidateName;
+    row.appendChild(candidateCell);
+
+    const jobCell = document.createElement("td");
+    jobCell.textContent = jobTitle;
+    row.appendChild(jobCell);
+
+    const dateCell = document.createElement("td");
+    dateCell.textContent = appliedDate;
+    row.appendChild(dateCell);
+
+    const statusCell = document.createElement("td");
+
+    if (writeRoles.includes(currentAdminRole)) {
+
+      const select = document.createElement("select");
+
+      select.style.padding = "7px";
+
+      statusOptions.forEach(option => {
+
+        const optionElement = document.createElement("option");
+
+        optionElement.value = option.value;
+        optionElement.textContent = option.label;
+
+        select.appendChild(optionElement);
+
+      });
+
+      const currentStatus = statusOptions.some(
+        item => item.value === application.status
+      ) ? application.status : "submitted";
+
+      select.value = currentStatus;
+
+      statusCell.appendChild(select);
+
+      const saveButton = document.createElement("button");
+
+      saveButton.type = "button";
+      saveButton.textContent = "Save";
+      saveButton.style.marginTop = "5px";
+
+      saveButton.addEventListener("click", () => {
+
+        changeStatus(application, select.value, saveButton);
+
+      });
+
+      statusCell.appendChild(document.createElement("br"));
+      statusCell.appendChild(saveButton);
+
+    } else {
+
+      statusCell.textContent = displayStatus(application.status);
+
+    }
+
+    row.appendChild(statusCell);
+
+    const actionCell = document.createElement("td");
+
+    const viewButton = document.createElement("button");
+
+    viewButton.type = "button";
+    viewButton.textContent = "View Details";
+
+    viewButton.addEventListener("click", () => {
+      viewApplication(application);
+    });
+
+    actionCell.appendChild(viewButton);
+    row.appendChild(actionCell);
+
+    applicationsTable.appendChild(row);
+
+  });
+
+}
+
+// Search
+function getFilteredApplications() {
+
+  const term = searchInput.value.trim().toLowerCase();
+
+  return applications.filter(application => {
+
+    const candidate = findCandidate(application);
+
+    return [
+      application.id,
+      application.jobTitle,
+      application.status,
+      application.email,
+      application.fullName,
+      candidate?.fullName,
+      candidate?.email,
+      candidate?.mobile
+    ].some(value =>
+      String(value || "").toLowerCase().includes(term)
+    );
+
+  });
+
+}
+
+searchInput.addEventListener("input", () => {
+
+  const filtered = getFilteredApplications();
+
+  renderApplications(filtered);
+
+  applicationCount.textContent =
+    "Showing " + filtered.length +
+    " of " + applications.length + " applications";
+
+});
+
+// Load applications and candidate data
+async function loadApplications() {
+
+  applicationCount.textContent = "Loading applications...";
+
+  try {
+
+    const [applicationSnapshot, candidateSnapshot] =
+      await Promise.all([
+
+        getDocs(collection(db, "applications")),
+        getDocs(collection(db, "candidates"))
+
+      ]);
+
+    applications = applicationSnapshot.docs.map(item => ({
+      id: item.id,
+      ...item.data()
+    }));
+
+    candidates = candidateSnapshot.docs.map(item => ({
+      id: item.id,
+      ...item.data()
+    }));
+
+    applications.sort((a, b) => {
+
+      const dateA = a.appliedAt?.toMillis
+        ? a.appliedAt.toMillis()
+        : 0;
+
+      const dateB = b.appliedAt?.toMillis
+        ? b.appliedAt.toMillis()
+        : 0;
+
+      return dateB - dateA;
+
+    });
+
+    applicationCount.textContent =
+      "Total applications: " +
+      applications.length.toLocaleString("en-IN");
+
+    renderApplications(applications);
+
+  } catch (error) {
+
+    console.error("Application loading error:", error);
+
+    applicationCount.textContent =
+      "Unable to load applications. Check Firestore permissions.";
+
+    applicationsTable.replaceChildren();
+
+    const row = document.createElement("tr");
+    const cell = document.createElement("td");
+
+    cell.colSpan = 6;
+    cell.textContent = "Error loading application records.";
+
+    row.appendChild(cell);
+    applicationsTable.appendChild(row);
+
+  }
+
+}
+
+// Close details
+document.getElementById("closeDetails")
+.addEventListener("click", () => {
+
+  detailsSection.hidden = true;
+
+});
+
+// Admin verification
 onAuthStateChanged(auth, async (user) => {
 
   if (!user) {
+
     window.location.replace("../login.html");
     return;
+
   }
 
   try {
@@ -118,9 +568,11 @@ onAuthStateChanged(auth, async (user) => {
     const adminSnap = await getDoc(adminRef);
 
     if (!adminSnap.exists()) {
+
       await signOut(auth);
       window.location.replace("../login.html");
       return;
+
     }
 
     const adminData = adminSnap.data();
@@ -129,36 +581,48 @@ onAuthStateChanged(auth, async (user) => {
       adminData.status !== "active" ||
       !allowedRoles.includes(adminData.role)
     ) {
+
       await signOut(auth);
       window.location.replace("../login.html");
       return;
+
     }
 
+    currentAdminRole = adminData.role;
+
     welcome.textContent =
-      "Welcome, " + (adminData.fullName || user.displayName || "Administrator");
+      "Welcome, " +
+      (adminData.fullName || user.displayName || "Administrator");
 
     document.body.style.display = "";
+
+    await loadApplications();
 
   } catch (error) {
 
     console.error("Admin verification error:", error);
-    welcome.textContent = "Unable to verify administrator access.";
-    document.body.style.display = "";
+
+    window.location.replace("../login.html");
 
   }
 
 });
 
+// Sign out
 logoutButton.addEventListener("click", async (event) => {
 
   event.preventDefault();
 
   try {
+
     await signOut(auth);
     window.location.replace("../login.html");
+
   } catch (error) {
+
     alert("Sign out failed. Please try again.");
     console.error(error);
+
   }
 
 });
