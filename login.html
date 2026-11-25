@@ -1,1 +1,196 @@
-<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="description" content="Aditya Gurukul Careers – Education Career & Recruitment Portal"><title>Login | Aditya Gurukul Careers</title><link rel="stylesheet" href="./assets/css/style.css"></head><body><div class="topbar"><div class="container">Education Career & Recruitment Portal <span style="float:right">Empowering Educators. Connecting Opportunities.</span></div></div><header class="navbar"><div class="container navinner"><a class="brand" href="./index.html"><span class="brandmark">AG</span><span>ADITYA GURUKUL<small>CAREERS</small></span></a><nav class="navlinks"><a href="./index.html">Home</a><a href="./about.html">About</a><a href="./jobs.html">Find Jobs</a><a href="./contact.html">Contact</a></nav><div><a class="btn secondary" href="./login.html">Login</a> <a class="btn" href="./register.html">Register</a></div></div></header><section class="pagehero"><div class="container"><div class="breadcrumbs">Home / Login</div><h1>Candidate login</h1><p class="muted">Access your career profile and application updates.</p></div></section><form class="formwrap" data-demo-form><label>Email address</label><input type="email" required placeholder="name@example.com"><label>Password</label><input type="password" required placeholder="Your password"><button class="btn">Sign In</button><p data-message class="muted"></p><p>New candidate? <a href="./register.html">Create a profile</a></p><div class="notice">Demo interface only. Secure authentication is not yet connected.</div></form><footer class="footer"><div class="container"><div class="footergrid"><div><h3>ADITYA GURUKUL CAREERS</h3><p>Connecting education professionals with meaningful career opportunities across Maharashtra.</p></div><div><h3>Explore</h3><a href="./jobs.html">Find Jobs</a><a href="./about.html">About Us</a><a href="./register.html">Candidate Registration</a></div><div><h3>Candidate</h3><a href="./login.html">Login</a><a href="./candidate-dashboard.html">Dashboard</a></div><div><h3>Information</h3><a href="./privacy.html">Privacy Policy</a><a href="./terms.html">Terms</a><a href="./admin/index.html">Administrator</a></div></div><div class="copyright">© <span data-year></span> Aditya Gurukul Careers. All rights reserved.</div></div></footer><script src="./assets/js/main.js"></script></body></html>
+
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="description" content="Aditya Gurukul Careers – Education Career & Recruitment Portal">
+<title>Login | Aditya Gurukul Careers</title>
+<link rel="stylesheet" href="./assets/css/style.css">
+</head>
+
+<body>
+
+<div class="topbar">
+  <div class="container">
+    Education Career & Recruitment Portal
+    <span style="float:right">Empowering Educators. Connecting Opportunities.</span>
+  </div>
+</div>
+
+<header class="navbar">
+  <div class="container navinner">
+    <a class="brand" href="./index.html">
+      <span class="brandmark">AG</span>
+      <span>ADITYA GURUKUL<small>CAREERS</small></span>
+    </a>
+
+    <nav class="navlinks">
+      <a href="./index.html">Home</a>
+      <a href="./about.html">About</a>
+      <a href="./jobs.html">Find Jobs</a>
+      <a href="./contact.html">Contact</a>
+    </nav>
+
+    <div>
+      <a class="btn secondary" href="./login.html">Login</a>
+      <a class="btn" href="./register.html">Register</a>
+    </div>
+  </div>
+</header>
+
+<section class="pagehero">
+  <div class="container">
+    <div class="breadcrumbs">Home / Login</div>
+    <h1>Candidate Login</h1>
+    <p class="muted">Access your career profile and application updates.</p>
+  </div>
+</section>
+
+<div class="formwrap">
+
+  <h2>Welcome Back</h2>
+  <p class="muted">Sign in securely using your Google Account.</p>
+
+  <button type="button" class="btn" id="googleLogin" style="width:100%">
+    Continue with Google
+  </button>
+
+  <p id="loginMessage" class="muted" role="status" aria-live="polite"></p>
+
+  <p>New candidate? <a href="./register.html">Create a profile</a></p>
+
+  <div class="notice">
+    Google authentication is provided through Firebase.
+  </div>
+
+</div>
+
+<footer class="footer">
+  <div class="container">
+    <div class="footergrid">
+
+      <div>
+        <h3>ADITYA GURUKUL CAREERS</h3>
+        <p>Connecting education professionals with meaningful career opportunities across Maharashtra.</p>
+      </div>
+
+      <div>
+        <h3>Explore</h3>
+        <a href="./jobs.html">Find Jobs</a>
+        <a href="./about.html">About Us</a>
+        <a href="./register.html">Candidate Registration</a>
+      </div>
+
+      <div>
+        <h3>Candidate</h3>
+        <a href="./login.html">Login</a>
+        <a href="./candidate-dashboard.html">Dashboard</a>
+      </div>
+
+      <div>
+        <h3>Information</h3>
+        <a href="./privacy.html">Privacy Policy</a>
+        <a href="./terms.html">Terms</a>
+        <a href="./admin/index.html">Administrator</a>
+      </div>
+
+    </div>
+
+    <div class="copyright">
+      © <span data-year></span> Aditya Gurukul Careers. All rights reserved.
+    </div>
+  </div>
+</footer>
+
+<script src="./assets/js/main.js"></script>
+
+<script type="module">
+import { auth, db, googleProvider } from "./assets/js/firebase.js";
+
+import {
+  signInWithPopup
+} from "https://www.gstatic.com/firebasejs/13.4.0/firebase-auth.js";
+
+import {
+  doc,
+  getDoc,
+  setDoc,
+  serverTimestamp
+} from "https://www.gstatic.com/firebasejs/13.4.0/firebase-firestore.js";
+
+const loginButton = document.getElementById("googleLogin");
+const message = document.getElementById("loginMessage");
+
+loginButton.addEventListener("click", async () => {
+
+  loginButton.disabled = true;
+  message.textContent = "Signing in... Please wait.";
+
+  try {
+
+    const result = await signInWithPopup(auth, googleProvider);
+    const user = result.user;
+
+    // Check whether this user is an authorized administrator
+    const adminRef = doc(db, "admins", user.uid);
+    const adminSnap = await getDoc(adminRef);
+
+    if (adminSnap.exists()) {
+
+      const adminData = adminSnap.data();
+
+      const allowedRoles = [
+        "super_admin",
+        "admin",
+        "recruitment_manager",
+        "exam_controller",
+        "content_manager",
+        "viewer"
+      ];
+
+      if (
+        adminData.status === "active" &&
+        allowedRoles.includes(adminData.role)
+      ) {
+        window.location.href = "./admin/dashboard.html";
+        return;
+      }
+
+      throw new Error("Administrator access is inactive or unauthorized.");
+    }
+
+    // Create a basic candidate user record if it does not exist
+    const userRef = doc(db, "users", user.uid);
+    const userSnap = await getDoc(userRef);
+
+    if (!userSnap.exists()) {
+      await setDoc(userRef, {
+        fullName: user.displayName || "",
+        email: user.email || "",
+        role: "candidate",
+        status: "active",
+        createdAt: serverTimestamp()
+      });
+    }
+
+    window.location.href = "./candidate-dashboard.html";
+
+  } catch (error) {
+
+    console.error("Login Error:", error);
+
+    if (error.code === "auth/popup-closed-by-user") {
+      message.textContent = "Google sign-in was cancelled. Please try again.";
+    } else {
+      message.textContent = error.message || "Login failed. Please try again.";
+    }
+
+    loginButton.disabled = false;
+  }
+
+});
+</script>
+
+</body>
+</html>
