@@ -1,1 +1,419 @@
-<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="description" content="Aditya Gurukul Careers – Education Career & Recruitment Portal"><title>Register | Aditya Gurukul Careers</title><link rel="stylesheet" href="./assets/css/style.css"></head><body><div class="topbar"><div class="container">Education Career & Recruitment Portal <span style="float:right">Empowering Educators. Connecting Opportunities.</span></div></div><header class="navbar"><div class="container navinner"><a class="brand" href="./index.html"><span class="brandmark">AG</span><span>ADITYA GURUKUL<small>CAREERS</small></span></a><nav class="navlinks"><a href="./index.html">Home</a><a href="./about.html">About</a><a href="./jobs.html">Find Jobs</a><a href="./contact.html">Contact</a></nav><div><a class="btn secondary" href="./login.html">Login</a> <a class="btn" href="./register.html">Register</a></div></div></header><section class="pagehero"><div class="container"><div class="breadcrumbs">Home / Registration</div><h1>Create your candidate profile</h1><p class="muted">Enter your basic details to begin.</p></div></section><form class="formwrap" data-demo-form><div class="formgrid"><div class="formgroup"><label>Full name *</label><input required placeholder="Your full name"></div><div class="formgroup"><label>Email address *</label><input type="email" required placeholder="name@example.com"></div><div class="formgroup"><label>Mobile number *</label><input required placeholder="10-digit mobile number"></div><div class="formgroup"><label>City / District</label><input placeholder="e.g. Mumbai"></div><div class="formgroup"><label>Highest qualification</label><select><option>Select qualification</option><option>Graduate</option><option>Postgraduate</option><option>Professional qualification</option><option>Other</option></select></div><div class="formgroup"><label>Area of interest</label><select><option>Select department</option><option>Teaching</option><option>Academic Leadership</option><option>Sports & Activities</option><option>Technology</option><option>Administration</option><option>Student Support</option></select></div><div class="formgroup full"><label>Create password *</label><input type="password" required placeholder="Choose a password"></div><div class="formgroup full"><label><input type="checkbox" required style="width:auto"> I have read the privacy notice and agree to recruitment-related communication.</label></div><div class="formgroup full"><button class="btn">Create Profile</button><p data-message class="muted"></p></div></div><div class="notice">Demo form only: no information is transmitted or saved. Configure secure authentication and database storage before real registrations.</div></form><footer class="footer"><div class="container"><div class="footergrid"><div><h3>ADITYA GURUKUL CAREERS</h3><p>Connecting education professionals with meaningful career opportunities across Maharashtra.</p></div><div><h3>Explore</h3><a href="./jobs.html">Find Jobs</a><a href="./about.html">About Us</a><a href="./register.html">Candidate Registration</a></div><div><h3>Candidate</h3><a href="./login.html">Login</a><a href="./candidate-dashboard.html">Dashboard</a></div><div><h3>Information</h3><a href="./privacy.html">Privacy Policy</a><a href="./terms.html">Terms</a><a href="./admin/index.html">Administrator</a></div></div><div class="copyright">© <span data-year></span> Aditya Gurukul Careers. All rights reserved.</div></div></footer><script src="./assets/js/main.js"></script></body></html>
+
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="description" content="Candidate Registration - Aditya Gurukul Careers">
+<title>Candidate Registration | Aditya Gurukul Careers</title>
+<link rel="stylesheet" href="./assets/css/style.css">
+</head>
+
+<body>
+
+<div class="topbar">
+  <div class="container">
+    Education Career & Recruitment Portal
+    <span style="float:right">Empowering Educators. Connecting Opportunities.</span>
+  </div>
+</div>
+
+<header class="navbar">
+  <div class="container navinner">
+    <a class="brand" href="./index.html">
+      <span class="brandmark">AG</span>
+      <span>ADITYA GURUKUL<small>CAREERS</small></span>
+    </a>
+
+    <nav class="navlinks">
+      <a href="./index.html">Home</a>
+      <a href="./about.html">About</a>
+      <a href="./jobs.html">Find Jobs</a>
+      <a href="./contact.html">Contact</a>
+    </nav>
+
+    <div>
+      <a class="btn secondary" href="./login.html">Login</a>
+    </div>
+  </div>
+</header>
+
+<section class="pagehero">
+  <div class="container">
+    <div class="breadcrumbs">Home / Registration</div>
+    <h1>Create Your Candidate Profile</h1>
+    <p class="muted">Build your professional profile and explore education career opportunities.</p>
+  </div>
+</section>
+
+<section class="section">
+<div class="container">
+
+<div class="formwrap">
+
+  <div id="googleSection">
+    <h2>Step 1 – Verify Your Account</h2>
+    <p>Sign in securely using your Google Account to begin registration.</p>
+
+    <button type="button" class="btn" id="googleLoginButton">
+      Continue with Google
+    </button>
+
+    <p id="authMessage" class="muted" aria-live="polite"></p>
+  </div>
+
+  <div id="profileSection" style="display:none;">
+
+    <div class="notice">
+      <strong>Google Account Verified</strong>
+      <p id="signedInEmail"></p>
+    </div>
+
+    <h2>Step 2 – Candidate Information</h2>
+
+    <form id="candidateForm">
+
+      <div class="formgrid">
+
+        <div class="formgroup">
+          <label for="fullName">Full Name *</label>
+          <input id="fullName" required maxlength="100" placeholder="Enter your full name">
+        </div>
+
+        <div class="formgroup">
+          <label for="email">Email Address</label>
+          <input id="email" type="email" readonly>
+        </div>
+
+        <div class="formgroup">
+          <label for="mobile">Mobile Number *</label>
+          <input id="mobile" type="tel" required maxlength="10"
+          pattern="[6-9][0-9]{9}" placeholder="10-digit mobile number">
+        </div>
+
+        <div class="formgroup">
+          <label for="city">City / District *</label>
+          <input id="city" required maxlength="100" placeholder="e.g. Mumbai">
+        </div>
+
+        <div class="formgroup">
+          <label for="qualification">Highest Qualification *</label>
+          <select id="qualification" required>
+            <option value="">Select qualification</option>
+            <option>HSC / 12th</option>
+            <option>Diploma</option>
+            <option>Graduate</option>
+            <option>Postgraduate</option>
+            <option>Ph.D.</option>
+            <option>B.Ed.</option>
+            <option>D.Ed. / D.El.Ed.</option>
+            <option>B.P.Ed.</option>
+            <option>M.P.Ed.</option>
+            <option>Professional Qualification</option>
+            <option>Other</option>
+          </select>
+        </div>
+
+        <div class="formgroup">
+          <label for="interest">Area of Interest *</label>
+          <select id="interest" required>
+            <option value="">Select department</option>
+            <option>Teaching</option>
+            <option>Academic Leadership</option>
+            <option>Sports & Activities</option>
+            <option>Technology</option>
+            <option>Administration</option>
+            <option>Student Support</option>
+            <option>Accounts & Finance</option>
+            <option>Library</option>
+            <option>Transport</option>
+            <option>Other</option>
+          </select>
+        </div>
+
+        <div class="formgroup">
+          <label for="experience">Work Experience</label>
+          <select id="experience">
+            <option value="">Select experience</option>
+            <option>Fresher</option>
+            <option>Less than 1 year</option>
+            <option>1–3 years</option>
+            <option>3–5 years</option>
+            <option>5–10 years</option>
+            <option>10+ years</option>
+          </select>
+        </div>
+
+        <div class="formgroup">
+          <label for="preferredLocation">Preferred Job Location</label>
+          <input id="preferredLocation" maxlength="150" placeholder="e.g. Mumbai, Pune, Nagpur">
+        </div>
+
+        <div class="formgroup full">
+          <label for="skills">Skills / Specialisation</label>
+          <textarea id="skills" rows="3" maxlength="1000"
+          placeholder="Mention your skills, subjects, certifications or specialisation"></textarea>
+        </div>
+
+        <div class="formgroup full">
+          <label>
+            <input type="checkbox" id="privacyConsent" required style="width:auto">
+            I have read the Privacy Policy and consent to the use of my information for recruitment-related purposes.
+          </label>
+        </div>
+
+        <div class="formgroup full">
+          <button type="submit" class="btn" id="saveButton">
+            Save Candidate Profile
+          </button>
+
+          <p id="formMessage" class="muted" aria-live="polite"></p>
+        </div>
+
+      </div>
+    </form>
+
+    <button type="button" class="btn secondary" id="signOutButton">
+      Sign Out
+    </button>
+
+  </div>
+
+</div>
+
+</div>
+</section>
+
+<footer class="footer">
+  <div class="container">
+
+    <div class="footergrid">
+
+      <div>
+        <h3>ADITYA GURUKUL CAREERS</h3>
+        <p>Connecting education professionals with meaningful career opportunities across Maharashtra.</p>
+      </div>
+
+      <div>
+        <h3>Explore</h3>
+        <a href="./jobs.html">Find Jobs</a>
+        <a href="./about.html">About Us</a>
+        <a href="./register.html">Candidate Registration</a>
+      </div>
+
+      <div>
+        <h3>Candidate</h3>
+        <a href="./login.html">Login</a>
+        <a href="./candidate-dashboard.html">Dashboard</a>
+      </div>
+
+      <div>
+        <h3>Information</h3>
+        <a href="./privacy.html">Privacy Policy</a>
+        <a href="./terms.html">Terms</a>
+        <a href="./admin/index.html">Administrator</a>
+      </div>
+
+    </div>
+
+    <div class="copyright">
+      © <span id="year"></span> Aditya Gurukul Careers. All rights reserved.
+    </div>
+
+  </div>
+</footer>
+
+<script type="module">
+
+import { auth, db, googleProvider } from "./assets/js/firebase.js";
+
+import {
+  signInWithPopup,
+  onAuthStateChanged,
+  signOut
+} from "https://www.gstatic.com/firebasejs/13.4.0/firebase-auth.js";
+
+import {
+  doc,
+  getDoc,
+  setDoc,
+  serverTimestamp
+} from "https://www.gstatic.com/firebasejs/13.4.0/firebase-firestore.js";
+
+const googleButton = document.getElementById("googleLoginButton");
+const googleSection = document.getElementById("googleSection");
+const profileSection = document.getElementById("profileSection");
+const candidateForm = document.getElementById("candidateForm");
+
+const authMessage = document.getElementById("authMessage");
+const formMessage = document.getElementById("formMessage");
+const saveButton = document.getElementById("saveButton");
+
+let currentUser = null;
+
+document.getElementById("year").textContent = new Date().getFullYear();
+
+onAuthStateChanged(auth, async (user) => {
+
+  currentUser = user;
+
+  if (!user) {
+    googleSection.style.display = "block";
+    profileSection.style.display = "none";
+    return;
+  }
+
+  googleSection.style.display = "none";
+  profileSection.style.display = "block";
+
+  document.getElementById("email").value = user.email || "";
+  document.getElementById("signedInEmail").textContent =
+    user.email || "Google account verified";
+
+  document.getElementById("fullName").value =
+    user.displayName || "";
+
+  try {
+
+    const candidateRef = doc(db, "candidates", user.uid);
+    const candidateSnapshot = await getDoc(candidateRef);
+
+    if (candidateSnapshot.exists()) {
+
+      const data = candidateSnapshot.data();
+
+      document.getElementById("fullName").value = data.fullName || user.displayName || "";
+      document.getElementById("mobile").value = data.mobile || "";
+      document.getElementById("city").value = data.location || "";
+      document.getElementById("qualification").value = data.qualification || "";
+      document.getElementById("interest").value = data.department || "";
+      document.getElementById("experience").value = data.experience || "";
+      document.getElementById("preferredLocation").value = data.preferredLocation || "";
+      document.getElementById("skills").value = data.skills || "";
+
+      document.getElementById("privacyConsent").checked =
+        data.privacyConsent === true;
+
+      saveButton.textContent = "Update Candidate Profile";
+    }
+
+  } catch (error) {
+
+    console.error(error);
+    formMessage.textContent =
+      "Unable to load your existing profile. Please refresh and try again.";
+
+  }
+
+});
+
+googleButton.addEventListener("click", async () => {
+
+  googleButton.disabled = true;
+  authMessage.textContent = "Connecting to Google...";
+
+  try {
+
+    await signInWithPopup(auth, googleProvider);
+
+    authMessage.textContent = "Google account verified.";
+
+  } catch (error) {
+
+    console.error(error);
+    authMessage.textContent =
+      error.message || "Google sign-in failed. Please try again.";
+
+  } finally {
+
+    googleButton.disabled = false;
+
+  }
+
+});
+
+candidateForm.addEventListener("submit", async (event) => {
+
+  event.preventDefault();
+
+  if (!currentUser) {
+    formMessage.textContent = "Please sign in with Google first.";
+    return;
+  }
+
+  if (!candidateForm.reportValidity()) return;
+
+  const mobile = document.getElementById("mobile").value.trim();
+
+  if (!/^[6-9][0-9]{9}$/.test(mobile)) {
+    formMessage.textContent = "Please enter a valid 10-digit Indian mobile number.";
+    return;
+  }
+
+  saveButton.disabled = true;
+  formMessage.textContent = "Saving your candidate profile...";
+
+  try {
+
+    const candidateRef = doc(db, "candidates", currentUser.uid);
+    const existing = await getDoc(candidateRef);
+
+    const candidateData = {
+
+      userId: currentUser.uid,
+      fullName: document.getElementById("fullName").value.trim(),
+      email: currentUser.email || "",
+      mobile: mobile,
+      location: document.getElementById("city").value.trim(),
+      qualification: document.getElementById("qualification").value,
+      department: document.getElementById("interest").value,
+      experience: document.getElementById("experience").value,
+      preferredLocation: document.getElementById("preferredLocation").value.trim(),
+      skills: document.getElementById("skills").value.trim(),
+      privacyConsent: document.getElementById("privacyConsent").checked,
+      status: existing.exists()
+        ? (existing.data().status || "active")
+        : "active",
+      updatedAt: serverTimestamp()
+
+    };
+
+    if (!existing.exists()) {
+      candidateData.createdAt = serverTimestamp();
+    }
+
+    await setDoc(candidateRef, candidateData, { merge: true });
+
+    formMessage.textContent =
+      "Your candidate profile has been saved successfully.";
+
+    saveButton.textContent = "Update Candidate Profile";
+
+  } catch (error) {
+
+    console.error(error);
+
+    formMessage.textContent =
+      "Profile could not be saved. Please try again. Error: " + error.message;
+
+  } finally {
+
+    saveButton.disabled = false;
+
+  }
+
+});
+
+document.getElementById("signOutButton").addEventListener("click", async () => {
+
+  await signOut(auth);
+  window.location.href = "./login.html";
+
+});
+
+</script>
+
+<script src="./assets/js/main.js"></script>
+
+</body>
+</html>
