@@ -27,7 +27,6 @@
 <a class="side-link" href="../admin/applications.html">Applications</a>
 <a class="side-link" href="../admin/settings.html">Settings</a>
 <a class="side-link" href="../index.html">← View website</a>
-
 <a class="side-link" href="#" id="logoutButton">Sign out</a>
 
 </aside>
@@ -47,34 +46,38 @@
 
 <div class="metric">
 <span>Total candidates</span>
-<strong>—</strong>
+<strong id="totalCandidates">—</strong>
 </div>
 
 <div class="metric">
 <span>Active vacancies</span>
-<strong>—</strong>
+<strong id="activeJobs">—</strong>
 </div>
 
 <div class="metric">
 <span>Applications received</span>
-<strong>—</strong>
+<strong id="totalApplications">—</strong>
 </div>
 
 <div class="metric">
 <span>Shortlisted</span>
-<strong>—</strong>
+<strong id="shortlistedApplications">—</strong>
 </div>
 
 </div>
 
 <section class="panel">
 <h3>Recruitment overview</h3>
-<p class="muted">Live recruitment statistics will be connected in the next development stage.</p>
+<p id="overviewMessage" class="muted">
+Loading live recruitment statistics...
+</p>
 </section>
 
 <section class="panel">
 <h3>Recent activity</h3>
-<p class="muted">Activity records will appear here after database integration.</p>
+<p class="muted">
+Activity records will appear here after activity tracking is implemented.
+</p>
 </section>
 
 <div class="notice">
@@ -97,7 +100,11 @@ import {
 
 import {
   doc,
-  getDoc
+  getDoc,
+  collection,
+  query,
+  where,
+  getCountFromServer
 } from "https://www.gstatic.com/firebasejs/13.4.0/firebase-firestore.js";
 
 const allowedRoles = [
@@ -111,10 +118,82 @@ const allowedRoles = [
 
 const welcome = document.getElementById("adminWelcome");
 const logoutButton = document.getElementById("logoutButton");
+const overviewMessage = document.getElementById("overviewMessage");
 
-// Hide dashboard until access is verified
 document.body.style.display = "none";
 
+// Get count from Firestore
+async function getCollectionCount(collectionName, conditions = []) {
+
+  const collectionRef = collection(db, collectionName);
+
+  const countQuery = conditions.length
+    ? query(collectionRef, ...conditions)
+    : collectionRef;
+
+  const snapshot = await getCountFromServer(countQuery);
+
+  return snapshot.data().count;
+}
+
+// Load dashboard statistics
+async function loadDashboardStats() {
+
+  try {
+
+    const [
+      candidatesCount,
+      jobsCount,
+      applicationsCount,
+      shortlistedCount
+    ] = await Promise.all([
+
+      getCollectionCount("candidates"),
+
+      getCollectionCount("jobs", [
+        where("status", "==", "published")
+      ]),
+
+      getCollectionCount("applications"),
+
+      getCollectionCount("applications", [
+        where("status", "==", "shortlisted")
+      ])
+
+    ]);
+
+    document.getElementById("totalCandidates").textContent =
+      candidatesCount.toLocaleString("en-IN");
+
+    document.getElementById("activeJobs").textContent =
+      jobsCount.toLocaleString("en-IN");
+
+    document.getElementById("totalApplications").textContent =
+      applicationsCount.toLocaleString("en-IN");
+
+    document.getElementById("shortlistedApplications").textContent =
+      shortlistedCount.toLocaleString("en-IN");
+
+    overviewMessage.textContent =
+      "Live statistics successfully loaded from Firebase Firestore.";
+
+  } catch (error) {
+
+    console.error("Dashboard statistics error:", error);
+
+    overviewMessage.textContent =
+      "Unable to load statistics. Please check Firestore permissions and try again.";
+
+    document.getElementById("totalCandidates").textContent = "—";
+    document.getElementById("activeJobs").textContent = "—";
+    document.getElementById("totalApplications").textContent = "—";
+    document.getElementById("shortlistedApplications").textContent = "—";
+
+  }
+
+}
+
+// Verify administrator
 onAuthStateChanged(auth, async (user) => {
 
   if (!user) {
@@ -149,26 +228,34 @@ onAuthStateChanged(auth, async (user) => {
 
     document.body.style.display = "";
 
+    await loadDashboardStats();
+
   } catch (error) {
 
     console.error("Admin verification error:", error);
 
-    welcome.textContent = "Unable to verify administrator access.";
-    document.body.style.display = "";
+    // Fail closed: do not display the admin dashboard
+    window.location.replace("../login.html");
+
   }
 
 });
 
+// Sign out
 logoutButton.addEventListener("click", async (event) => {
 
   event.preventDefault();
 
   try {
+
     await signOut(auth);
     window.location.replace("../login.html");
+
   } catch (error) {
+
     alert("Sign out failed. Please try again.");
     console.error(error);
+
   }
 
 });
