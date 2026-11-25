@@ -1,1 +1,282 @@
-<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="description" content="Aditya Gurukul Careers – Education Career & Recruitment Portal"><title>Job Details | Aditya Gurukul Careers</title><link rel="stylesheet" href="./assets/css/style.css"></head><body><div class="topbar"><div class="container">Education Career & Recruitment Portal <span style="float:right">Empowering Educators. Connecting Opportunities.</span></div></div><header class="navbar"><div class="container navinner"><a class="brand" href="./index.html"><span class="brandmark">AG</span><span>ADITYA GURUKUL<small>CAREERS</small></span></a><nav class="navlinks"><a href="./index.html">Home</a><a href="./about.html">About</a><a href="./jobs.html">Find Jobs</a><a href="./contact.html">Contact</a></nav><div><a class="btn secondary" href="./login.html">Login</a> <a class="btn" href="./register.html">Register</a></div></div></header><section class="pagehero"><div class="container"><div class="breadcrumbs">Home / Find Jobs / Details</div><h1>Sample: Mathematics Teacher</h1><p class="muted">Academic Department · Maharashtra · Full-time</p></div></section><section class="section"><div class="container"><span class="tag">Sample listing</span><h2>Role overview</h2><p>This page demonstrates a vacancy description. Replace sample content with an approved official job notification before publishing.</p><h3>Responsibilities</h3><ul><li>Plan and deliver age-appropriate lessons.</li><li>Assess learning and maintain academic records.</li><li>Collaborate with colleagues and communicate with families.</li></ul><h3>Eligibility</h3><p>Specify required qualifications, experience and certifications in the official notice.</p><div class="notice">This is a demonstration listing and is not an invitation to apply.</div><a class="btn" href="./register.html">Create Candidate Profile</a></div></section><footer class="footer"><div class="container"><div class="footergrid"><div><h3>ADITYA GURUKUL CAREERS</h3><p>Connecting education professionals with meaningful career opportunities across Maharashtra.</p></div><div><h3>Explore</h3><a href="./jobs.html">Find Jobs</a><a href="./about.html">About Us</a><a href="./register.html">Candidate Registration</a></div><div><h3>Candidate</h3><a href="./login.html">Login</a><a href="./candidate-dashboard.html">Dashboard</a></div><div><h3>Information</h3><a href="./privacy.html">Privacy Policy</a><a href="./terms.html">Terms</a><a href="./admin/index.html">Administrator</a></div></div><div class="copyright">© <span data-year></span> Aditya Gurukul Careers. All rights reserved.</div></div></footer><script src="./assets/js/main.js"></script></body></html>
+
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="description" content="Job Details – Aditya Gurukul Careers">
+<title>Job Details | Aditya Gurukul Careers</title>
+<link rel="stylesheet" href="./assets/css/style.css">
+</head>
+
+<body>
+
+<div class="topbar">
+  <div class="container">
+    Education Career & Recruitment Portal
+    <span style="float:right">Empowering Educators. Connecting Opportunities.</span>
+  </div>
+</div>
+
+<header class="navbar">
+  <div class="container navinner">
+    <a class="brand" href="./index.html">
+      <span class="brandmark">AG</span>
+      <span>ADITYA GURUKUL<small>CAREERS</small></span>
+    </a>
+
+    <nav class="navlinks">
+      <a href="./index.html">Home</a>
+      <a href="./about.html">About</a>
+      <a href="./jobs.html">Find Jobs</a>
+      <a href="./contact.html">Contact</a>
+    </nav>
+
+    <div>
+      <a class="btn secondary" href="./login.html">Login</a>
+      <a class="btn" href="./register.html">Register</a>
+    </div>
+  </div>
+</header>
+
+<section class="pagehero">
+  <div class="container">
+    <div class="breadcrumbs">
+      <a href="./index.html">Home</a> /
+      <a href="./jobs.html">Find Jobs</a> /
+      Details
+    </div>
+
+    <h1 id="jobTitle">Loading Job Details...</h1>
+    <p class="muted" id="jobMeta"></p>
+  </div>
+</section>
+
+<section class="section">
+  <div class="container">
+
+    <div id="loadingMessage">Loading vacancy information...</div>
+
+    <div id="jobContent" style="display:none;">
+
+      <span class="tag" id="jobDepartment"></span>
+
+      <h2>Role Overview</h2>
+      <p id="jobDescription"></p>
+
+      <h3>Eligibility & Qualification</h3>
+      <p id="jobQualification"></p>
+
+      <div id="responsibilitiesSection" style="display:none;">
+        <h3>Responsibilities</h3>
+        <ul id="jobResponsibilities"></ul>
+      </div>
+
+      <div id="eligibilitySection" style="display:none;">
+        <h3>Additional Eligibility</h3>
+        <p id="jobEligibility"></p>
+      </div>
+
+      <div id="experienceSection" style="display:none;">
+        <h3>Experience Required</h3>
+        <p id="jobExperience"></p>
+      </div>
+
+      <div class="notice">
+        Please review the job requirements carefully before applying.
+      </div>
+
+      <div style="margin-top:25px;">
+        <a class="btn" id="applyButton" href="./login.html">
+          Apply Now
+        </a>
+
+        <a class="btn secondary" href="./jobs.html">
+          Back to Jobs
+        </a>
+      </div>
+
+    </div>
+
+    <div id="errorMessage" class="notice" style="display:none;"></div>
+
+  </div>
+</section>
+
+<footer class="footer">
+  <div class="container">
+
+    <div class="footergrid">
+
+      <div>
+        <h3>ADITYA GURUKUL CAREERS</h3>
+        <p>Connecting education professionals with meaningful career opportunities across Maharashtra.</p>
+      </div>
+
+      <div>
+        <h3>Explore</h3>
+        <a href="./jobs.html">Find Jobs</a>
+        <a href="./about.html">About Us</a>
+        <a href="./register.html">Candidate Registration</a>
+      </div>
+
+      <div>
+        <h3>Candidate</h3>
+        <a href="./login.html">Login</a>
+        <a href="./candidate-dashboard.html">Dashboard</a>
+      </div>
+
+      <div>
+        <h3>Information</h3>
+        <a href="./privacy.html">Privacy Policy</a>
+        <a href="./terms.html">Terms</a>
+        <a href="./admin/index.html">Administrator</a>
+      </div>
+
+    </div>
+
+    <div class="copyright">
+      © <span id="year"></span> Aditya Gurukul Careers. All rights reserved.
+    </div>
+
+  </div>
+</footer>
+
+<script type="module">
+
+import { db } from "./assets/js/firebase.js";
+
+import {
+  doc,
+  getDoc
+} from "https://www.gstatic.com/firebasejs/13.4.0/firebase-firestore.js";
+
+const loadingMessage = document.getElementById("loadingMessage");
+const jobContent = document.getElementById("jobContent");
+const errorMessage = document.getElementById("errorMessage");
+
+document.getElementById("year").textContent = new Date().getFullYear();
+
+function showError(message) {
+  loadingMessage.style.display = "none";
+  jobContent.style.display = "none";
+  errorMessage.style.display = "block";
+  errorMessage.textContent = message;
+}
+
+function showText(id, value, fallback = "Not specified") {
+  document.getElementById(id).textContent =
+    value ? String(value) : fallback;
+}
+
+function showOptionalSection(sectionId, elementId, value) {
+  if (!value) return;
+
+  document.getElementById(sectionId).style.display = "block";
+  document.getElementById(elementId).textContent = String(value);
+}
+
+async function loadJobDetails() {
+
+  try {
+
+    const params = new URLSearchParams(window.location.search);
+    const jobId = params.get("id");
+
+    if (!jobId) {
+      showError("Job ID is missing. Please return to the Find Jobs page.");
+      return;
+    }
+
+    const jobRef = doc(db, "jobs", jobId);
+    const jobSnapshot = await getDoc(jobRef);
+
+    if (!jobSnapshot.exists()) {
+      showError("This job opportunity could not be found.");
+      return;
+    }
+
+    const job = jobSnapshot.data();
+
+    if (job.status !== "published") {
+      showError("This job opportunity is currently not available.");
+      return;
+    }
+
+    showText("jobTitle", job.jobTitle, "Untitled Position");
+
+    showText(
+      "jobMeta",
+      [
+        job.department,
+        job.location,
+        job.employmentType
+      ].filter(Boolean).join(" · "),
+      "Job Information"
+    );
+
+    showText("jobDepartment", job.department, "General");
+
+    showText(
+      "jobDescription",
+      job.description,
+      "Detailed job description will be announced by the recruitment team."
+    );
+
+    showText(
+      "jobQualification",
+      job.qualification,
+      "Please contact the recruitment team for qualification details."
+    );
+
+    if (Array.isArray(job.responsibilities) && job.responsibilities.length) {
+
+      const list = document.getElementById("jobResponsibilities");
+
+      job.responsibilities.forEach(item => {
+        const li = document.createElement("li");
+        li.textContent = String(item);
+        list.appendChild(li);
+      });
+
+      document.getElementById("responsibilitiesSection").style.display = "block";
+    }
+
+    showOptionalSection(
+      "eligibilitySection",
+      "jobEligibility",
+      job.eligibility
+    );
+
+    showOptionalSection(
+      "experienceSection",
+      "jobExperience",
+      job.experience
+    );
+
+    document.getElementById("applyButton").href =
+      "./login.html?jobId=" + encodeURIComponent(jobId);
+
+    document.title =
+      (job.jobTitle || "Job Details") + " | Aditya Gurukul Careers";
+
+    loadingMessage.style.display = "none";
+    jobContent.style.display = "block";
+
+  } catch (error) {
+
+    console.error("Job details error:", error);
+
+    showError("Unable to load job details. Please try again later.");
+
+  }
+}
+
+loadJobDetails();
+
+</script>
+
+<script src="./assets/js/main.js"></script>
+
+</body>
+</html>
