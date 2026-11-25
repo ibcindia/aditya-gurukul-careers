@@ -1,1 +1,378 @@
-<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="description" content="Aditya Gurukul Careers – Education Career & Recruitment Portal"><title>Profile | Aditya Gurukul Careers</title><link rel="stylesheet" href="./assets/css/style.css"></head><body><div class="topbar"><div class="container">Education Career & Recruitment Portal <span style="float:right">Empowering Educators. Connecting Opportunities.</span></div></div><header class="navbar"><div class="container navinner"><a class="brand" href="./index.html"><span class="brandmark">AG</span><span>ADITYA GURUKUL<small>CAREERS</small></span></a><nav class="navlinks"><a href="./index.html">Home</a><a href="./about.html">About</a><a href="./jobs.html">Find Jobs</a><a href="./contact.html">Contact</a></nav><div><a class="btn secondary" href="./login.html">Login</a> <a class="btn" href="./register.html">Register</a></div></div></header><section class="pagehero"><div class="container"><h1>My candidate profile</h1></div></section><form class="formwrap" data-demo-form><div class="formgrid"><div class="formgroup"><label>Full name</label><input placeholder="Full name"></div><div class="formgroup"><label>Email</label><input type="email" placeholder="Email"></div><div class="formgroup"><label>Qualification</label><input placeholder="Highest qualification"></div><div class="formgroup"><label>Years of experience</label><input type="number" min="0"></div><div class="formgroup full"><label>Professional summary</label><textarea rows="4"></textarea></div><div class="formgroup full"><label>Resume (PDF)</label><input type="file" accept=".pdf"></div><div class="formgroup full"><button class="btn">Save profile</button><p data-message class="muted"></p></div></div><div class="notice">Profile editing and file uploads require secure backend storage and access controls.</div></form><footer class="footer"><div class="container"><div class="footergrid"><div><h3>ADITYA GURUKUL CAREERS</h3><p>Connecting education professionals with meaningful career opportunities across Maharashtra.</p></div><div><h3>Explore</h3><a href="./jobs.html">Find Jobs</a><a href="./about.html">About Us</a><a href="./register.html">Candidate Registration</a></div><div><h3>Candidate</h3><a href="./login.html">Login</a><a href="./candidate-dashboard.html">Dashboard</a></div><div><h3>Information</h3><a href="./privacy.html">Privacy Policy</a><a href="./terms.html">Terms</a><a href="./admin/index.html">Administrator</a></div></div><div class="copyright">© <span data-year></span> Aditya Gurukul Careers. All rights reserved.</div></div></footer><script src="./assets/js/main.js"></script></body></html>
+
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="description" content="My Candidate Profile - Aditya Gurukul Careers">
+<title>My Candidate Profile | Aditya Gurukul Careers</title>
+<link rel="stylesheet" href="./assets/css/style.css">
+</head>
+
+<body>
+
+<div class="topbar">
+  <div class="container">
+    Education Career & Recruitment Portal
+    <span style="float:right">Empowering Educators. Connecting Opportunities.</span>
+  </div>
+</div>
+
+<header class="navbar">
+  <div class="container navinner">
+    <a class="brand" href="./index.html">
+      <span class="brandmark">AG</span>
+      <span>ADITYA GURUKUL<small>CAREERS</small></span>
+    </a>
+
+    <nav class="navlinks">
+      <a href="./index.html">Home</a>
+      <a href="./about.html">About</a>
+      <a href="./jobs.html">Find Jobs</a>
+      <a href="./contact.html">Contact</a>
+    </nav>
+
+    <div>
+      <a class="btn secondary" href="./candidate-dashboard.html">Dashboard</a>
+    </div>
+  </div>
+</header>
+
+<section class="pagehero">
+  <div class="container">
+    <div class="breadcrumbs">Home / Candidate / Profile</div>
+    <h1>My Candidate Profile</h1>
+    <p class="muted">View and update your professional information.</p>
+  </div>
+</section>
+
+<section class="section">
+<div class="container">
+
+  <div class="formwrap">
+
+    <div id="loadingMessage">
+      Loading your candidate profile...
+    </div>
+
+    <div id="profileSection" style="display:none;">
+
+      <div class="notice">
+        <strong>Account Information</strong>
+        <p id="accountEmail"></p>
+      </div>
+
+      <form id="profileForm">
+
+        <div class="formgrid">
+
+          <div class="formgroup">
+            <label for="fullName">Full Name *</label>
+            <input id="fullName" required maxlength="100">
+          </div>
+
+          <div class="formgroup">
+            <label for="email">Email Address</label>
+            <input id="email" type="email" readonly>
+          </div>
+
+          <div class="formgroup">
+            <label for="mobile">Mobile Number *</label>
+            <input id="mobile" type="tel" required maxlength="10"
+            pattern="[6-9][0-9]{9}" placeholder="10-digit mobile number">
+          </div>
+
+          <div class="formgroup">
+            <label for="location">City / District *</label>
+            <input id="location" required maxlength="100">
+          </div>
+
+          <div class="formgroup">
+            <label for="qualification">Highest Qualification *</label>
+            <select id="qualification" required>
+              <option value="">Select qualification</option>
+              <option>HSC / 12th</option>
+              <option>Diploma</option>
+              <option>Graduate</option>
+              <option>Postgraduate</option>
+              <option>Ph.D.</option>
+              <option>B.Ed.</option>
+              <option>D.Ed. / D.El.Ed.</option>
+              <option>B.P.Ed.</option>
+              <option>M.P.Ed.</option>
+              <option>Professional Qualification</option>
+              <option>Other</option>
+            </select>
+          </div>
+
+          <div class="formgroup">
+            <label for="department">Area of Interest *</label>
+            <select id="department" required>
+              <option value="">Select department</option>
+              <option>Teaching</option>
+              <option>Academic Leadership</option>
+              <option>Sports & Activities</option>
+              <option>Technology</option>
+              <option>Administration</option>
+              <option>Student Support</option>
+              <option>Accounts & Finance</option>
+              <option>Library</option>
+              <option>Transport</option>
+              <option>Other</option>
+            </select>
+          </div>
+
+          <div class="formgroup">
+            <label for="experience">Work Experience</label>
+            <select id="experience">
+              <option value="">Select experience</option>
+              <option>Fresher</option>
+              <option>Less than 1 year</option>
+              <option>1–3 years</option>
+              <option>3–5 years</option>
+              <option>5–10 years</option>
+              <option>10+ years</option>
+            </select>
+          </div>
+
+          <div class="formgroup">
+            <label for="preferredLocation">Preferred Job Location</label>
+            <input id="preferredLocation" maxlength="150">
+          </div>
+
+          <div class="formgroup full">
+            <label for="skills">Skills / Professional Summary</label>
+            <textarea id="skills" rows="5" maxlength="1000"
+            placeholder="Describe your skills, experience and specialisation"></textarea>
+          </div>
+
+          <div class="formgroup full">
+            <button type="submit" class="btn" id="saveButton">
+              Save Profile
+            </button>
+            <p id="formMessage" class="muted" aria-live="polite"></p>
+          </div>
+
+        </div>
+
+      </form>
+
+      <button type="button" class="btn secondary" id="signOutButton">
+        Sign Out
+      </button>
+
+    </div>
+
+    <div id="errorMessage" class="notice" style="display:none;"></div>
+
+  </div>
+
+</div>
+</section>
+
+<footer class="footer">
+  <div class="container">
+    <div class="footergrid">
+
+      <div>
+        <h3>ADITYA GURUKUL CAREERS</h3>
+        <p>Connecting education professionals with meaningful career opportunities across Maharashtra.</p>
+      </div>
+
+      <div>
+        <h3>Explore</h3>
+        <a href="./jobs.html">Find Jobs</a>
+        <a href="./about.html">About Us</a>
+        <a href="./register.html">Candidate Registration</a>
+      </div>
+
+      <div>
+        <h3>Candidate</h3>
+        <a href="./login.html">Login</a>
+        <a href="./candidate-dashboard.html">Dashboard</a>
+      </div>
+
+      <div>
+        <h3>Information</h3>
+        <a href="./privacy.html">Privacy Policy</a>
+        <a href="./terms.html">Terms</a>
+        <a href="./admin/index.html">Administrator</a>
+      </div>
+
+    </div>
+
+    <div class="copyright">
+      © <span id="year"></span> Aditya Gurukul Careers. All rights reserved.
+    </div>
+  </div>
+</footer>
+
+<script type="module">
+
+import { auth, db } from "./assets/js/firebase.js";
+
+import {
+  onAuthStateChanged,
+  signOut
+} from "https://www.gstatic.com/firebasejs/13.4.0/firebase-auth.js";
+
+import {
+  doc,
+  getDoc,
+  setDoc,
+  serverTimestamp
+} from "https://www.gstatic.com/firebasejs/13.4.0/firebase-firestore.js";
+
+const loadingMessage = document.getElementById("loadingMessage");
+const profileSection = document.getElementById("profileSection");
+const errorMessage = document.getElementById("errorMessage");
+const profileForm = document.getElementById("profileForm");
+const formMessage = document.getElementById("formMessage");
+const saveButton = document.getElementById("saveButton");
+
+let currentUser = null;
+let existingProfile = null;
+
+document.getElementById("year").textContent = new Date().getFullYear();
+
+function showError(message) {
+  loadingMessage.style.display = "none";
+  profileSection.style.display = "none";
+  errorMessage.style.display = "block";
+  errorMessage.textContent = message;
+}
+
+function fillField(id, value) {
+  document.getElementById(id).value = value || "";
+}
+
+onAuthStateChanged(auth, async (user) => {
+
+  if (!user) {
+    window.location.href = "./login.html";
+    return;
+  }
+
+  currentUser = user;
+
+  try {
+
+    const candidateRef = doc(db, "candidates", user.uid);
+    const snapshot = await getDoc(candidateRef);
+
+    if (!snapshot.exists()) {
+      showError(
+        "Candidate profile not found. Please complete your registration first."
+      );
+      return;
+    }
+
+    existingProfile = snapshot.data();
+
+    fillField("fullName", existingProfile.fullName || user.displayName);
+    fillField("email", user.email);
+    fillField("mobile", existingProfile.mobile);
+    fillField("location", existingProfile.location);
+    fillField("qualification", existingProfile.qualification);
+    fillField("department", existingProfile.department);
+    fillField("experience", existingProfile.experience);
+    fillField("preferredLocation", existingProfile.preferredLocation);
+    fillField("skills", existingProfile.skills);
+
+    document.getElementById("accountEmail").textContent =
+      user.email || "Google account";
+
+    loadingMessage.style.display = "none";
+    profileSection.style.display = "block";
+
+  } catch (error) {
+
+    console.error(error);
+
+    showError(
+      "Unable to load profile. Please sign in again or try later. " +
+      error.message
+    );
+
+  }
+
+});
+
+profileForm.addEventListener("submit", async (event) => {
+
+  event.preventDefault();
+
+  if (!currentUser) {
+    formMessage.textContent = "Please sign in first.";
+    return;
+  }
+
+  if (!profileForm.reportValidity()) return;
+
+  const mobile = document.getElementById("mobile").value.trim();
+
+  if (!/^[6-9][0-9]{9}$/.test(mobile)) {
+    formMessage.textContent =
+      "Please enter a valid 10-digit Indian mobile number.";
+    return;
+  }
+
+  saveButton.disabled = true;
+  formMessage.textContent = "Updating your profile...";
+
+  try {
+
+    const candidateRef = doc(db, "candidates", currentUser.uid);
+
+    const updatedData = {
+
+      userId: currentUser.uid,
+      fullName: document.getElementById("fullName").value.trim(),
+      email: currentUser.email || "",
+      mobile: mobile,
+      location: document.getElementById("location").value.trim(),
+      qualification: document.getElementById("qualification").value,
+      department: document.getElementById("department").value,
+      experience: document.getElementById("experience").value,
+      preferredLocation: document.getElementById("preferredLocation").value.trim(),
+      skills: document.getElementById("skills").value.trim(),
+      updatedAt: serverTimestamp()
+
+    };
+
+    await setDoc(candidateRef, updatedData, { merge: true });
+
+    existingProfile = {
+      ...existingProfile,
+      ...updatedData
+    };
+
+    formMessage.textContent =
+      "Your candidate profile has been updated successfully.";
+
+  } catch (error) {
+
+    console.error(error);
+
+    formMessage.textContent =
+      "Profile update failed: " + error.message;
+
+  } finally {
+
+    saveButton.disabled = false;
+
+  }
+
+});
+
+document.getElementById("signOutButton").addEventListener("click", async () => {
+  await signOut(auth);
+  window.location.href = "./login.html";
+});
+
+</script>
+
+<script src="./assets/js/main.js"></script>
+
+</body>
+</html>
