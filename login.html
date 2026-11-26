@@ -140,10 +140,8 @@ import {
   serverTimestamp
 } from "https://www.gstatic.com/firebasejs/13.4.0/firebase-firestore.js";
 
-
 const loginButton = document.getElementById("googleLogin");
 const message = document.getElementById("loginMessage");
-
 
 loginButton.addEventListener("click", async function () {
 
@@ -152,18 +150,14 @@ loginButton.addEventListener("click", async function () {
 
   try {
 
-    // Keep the user signed in across pages and browser visits
     await setPersistence(auth, browserLocalPersistence);
 
-    // Google Sign In
     const result = await signInWithPopup(auth, googleProvider);
-
     const user = result.user;
 
     message.textContent = "Verifying your account...";
 
-
-    // Check Admin Account
+    // ADMIN ACCOUNT VERIFICATION
     const adminRef = doc(db, "admins", user.uid);
     const adminSnap = await getDoc(adminRef);
 
@@ -193,10 +187,10 @@ loginButton.addEventListener("click", async function () {
       }
 
       throw new Error("Administrator account is inactive or unauthorized.");
+
     }
 
-
-    // Candidate Account
+    // CANDIDATE ACCOUNT
     const userRef = doc(db, "users", user.uid);
     const userSnap = await getDoc(userRef);
 
@@ -215,7 +209,6 @@ loginButton.addEventListener("click", async function () {
     message.textContent = "Login successful. Opening your dashboard...";
 
     window.location.replace("./candidate-dashboard.html");
-
 
   } catch (error) {
 
@@ -246,6 +239,8 @@ loginButton.addEventListener("click", async function () {
 });
 
 </script>
+
+<script type="module" src="./assets/js/account-menu.js"></script>
 
 </body>
 </html>
