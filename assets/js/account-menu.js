@@ -1,60 +1,56 @@
 
-import { auth } from "./firebase.js";
+import { auth, db } from "./firebase.js";
 
 import {
   onAuthStateChanged,
   signOut
 } from "https://www.gstatic.com/firebasejs/13.4.0/firebase-auth.js";
 
-const accountArea = document.getElementById("accountArea");
+import {
+  doc,
+  getDoc
+} from "https://www.gstatic.com/firebasejs/13.4.0/firebase-firestore.js";
 
-function escapeHTML(value) {
-  return String(value).replace(/[&<>"']/g, (char) => ({
-    "&": "&amp;",
-    "<": "&lt;",
-    ">": "&gt;",
-    '"': "&quot;",
-    "'": "&#39;"
-  })[char]);
-}
+const accountArea = document.getElementById("accountArea");
 
 if (accountArea) {
 
   const style = document.createElement("style");
 
   style.textContent = `
-    .account-wrap {
+    #accountArea {
       position: relative;
       display: flex;
       align-items: center;
       gap: 10px;
+      z-index: 100000;
     }
 
     .account-user-btn {
       display: flex;
       align-items: center;
       gap: 9px;
-      border: 1px solid #dce3e8;
+      border: 1px solid #d7c6a0;
       background: #fff;
-      color: #183047;
-      padding: 6px 12px 6px 7px;
+      color: #173b35;
+      padding: 7px 13px;
       border-radius: 30px;
       cursor: pointer;
       font: inherit;
+      font-weight: 600;
     }
 
     .account-avatar {
-      width: 36px;
-      height: 36px;
+      width: 34px;
+      height: 34px;
       border-radius: 50%;
-      background: #173d35;
+      background: #173b35;
       color: #fff;
       display: inline-flex;
       align-items: center;
       justify-content: center;
       font-weight: 700;
       overflow: hidden;
-      flex-shrink: 0;
     }
 
     .account-avatar img {
@@ -63,48 +59,39 @@ if (accountArea) {
       object-fit: cover;
     }
 
-    .account-user-name {
-      max-width: 130px;
-      overflow: hidden;
-      text-overflow: ellipsis;
-      white-space: nowrap;
-      font-size: 14px;
-      font-weight: 600;
-    }
-
     .account-dropdown {
       position: absolute;
       top: calc(100% + 12px);
       right: 0;
-      width: 245px;
+      width: 235px;
       background: #fff;
-      border: 1px solid #e1e7eb;
+      border: 1px solid #e5e5e5;
       border-radius: 12px;
-      box-shadow: 0 12px 35px rgba(0,0,0,.15);
-      padding: 9px;
-      z-index: 99999;
+      box-shadow: 0 12px 35px rgba(0,0,0,.16);
+      padding: 10px;
+      display: none;
+      z-index: 100002;
     }
 
-    .account-dropdown[hidden] {
-      display: none !important;
+    .account-dropdown.show {
+      display: block;
     }
 
-    .account-info {
-      padding: 12px;
-      border-bottom: 1px solid #edf0f2;
-      margin-bottom: 6px;
+    .account-user-info {
+      padding: 10px;
+      border-bottom: 1px solid #eee;
+      margin-bottom: 7px;
       overflow-wrap: anywhere;
     }
 
-    .account-info strong {
+    .account-user-info strong {
       display: block;
-      color: #183047;
+      color: #173b35;
       font-size: 14px;
-      margin-bottom: 4px;
     }
 
-    .account-info small {
-      color: #71808c;
+    .account-user-info small {
+      color: #777;
       font-size: 12px;
     }
 
@@ -113,238 +100,168 @@ if (accountArea) {
       display: block;
       width: 100%;
       box-sizing: border-box;
-      padding: 11px 12px;
-      border: 0;
-      border-radius: 8px;
-      background: transparent;
-      color: #263b4b;
-      text-align: left;
       text-decoration: none;
-      font: inherit;
+      padding: 10px;
+      border-radius: 7px;
+      color: #333;
       font-size: 14px;
+      text-align: left;
+      background: transparent;
+      border: 0;
       cursor: pointer;
+      font-family: inherit;
     }
 
     .account-dropdown a:hover,
     .account-logout:hover {
-      background: #f1f5f4;
+      background: #f3f6f4;
+      color: #173b35;
     }
 
     .account-logout {
+      border-top: 1px solid #eee;
+      margin-top: 6px;
       color: #b42318;
-      border-top: 1px solid #edf0f2;
-      margin-top: 5px;
-      padding-top: 12px;
     }
 
-    @media(max-width: 600px) {
-      .account-user-name {
-        display: none;
+    @media(max-width: 700px) {
+      #accountArea {
+        margin-top: 10px;
       }
 
       .account-dropdown {
-        width: 230px;
+        right: 0;
       }
     }
   `;
 
   document.head.appendChild(style);
 
+  accountArea.innerHTML = `
+    <a class="btn secondary" href="./login.html">Login</a>
+    <a class="btn" href="./register.html">Register</a>
+  `;
 
-  function showLoggedOut() {
+  onAuthStateChanged(auth, async (user) => {
 
-    accountArea.innerHTML = `
-      <a class="btn secondary" href="./login.html">Login</a>
-      <a class="btn" href="./register.html">Register</a>
-    `;
+    if (!user) {
+      accountArea.innerHTML = `
+        <a class="btn secondary" href="./login.html">Login</a>
+        <a class="btn" href="./register.html">Register</a>
+      `;
+      return;
+    }
 
-  }
+    let displayName = user.displayName || "My Account";
+    let photoURL = user.photoURL || "";
+    let isAdmin = false;
 
+    try {
+      const adminSnap = await getDoc(doc(db, "admins", user.uid));
 
-  function showLoggedIn(user) {
+      if (adminSnap.exists() &&
+          adminSnap.data().status === "active") {
+        isAdmin = true;
+      }
 
-    const displayName = escapeHTML(
-      user.displayName || "Candidate"
-    );
+      const candidateSnap = await getDoc(
+        doc(db, "candidates", user.uid)
+      );
 
-    const email = escapeHTML(
-      user.email || ""
-    );
+      if (candidateSnap.exists()) {
+        const candidate = candidateSnap.data();
+        displayName = candidate.fullName || displayName;
+      }
 
-    const initial =
-      displayName.trim().charAt(0).toUpperCase() || "U";
+    } catch (error) {
+      console.error("Account details:", error);
+    }
 
-    const safePhotoURL =
-      user.photoURL && user.photoURL.startsWith("https://")
-        ? escapeHTML(user.photoURL)
-        : "";
+    const initial = displayName.trim().charAt(0).toUpperCase() || "U";
 
-    const avatar = safePhotoURL
-      ? `<img src="${safePhotoURL}" alt="Profile">`
+    const avatar = photoURL
+      ? `<img src="${photoURL}" alt="Profile">`
       : initial;
 
+    const dashboardLink = isAdmin
+      ? "./admin/dashboard.html"
+      : "./candidate-dashboard.html";
+
+    const dashboardLabel = isAdmin
+      ? "Admin Dashboard"
+      : "My Dashboard";
 
     accountArea.innerHTML = `
-      <div class="account-wrap">
+      <button
+        type="button"
+        class="account-user-btn"
+        id="accountUserButton"
+        aria-expanded="false"
+        aria-label="Open account menu">
 
-        <button
-          type="button"
-          class="account-user-btn"
-          id="accountUserButton"
-          aria-expanded="false"
-          aria-label="Open account menu">
+        <span class="account-avatar">${avatar}</span>
+        <span>My Account</span>
+        <span>▾</span>
+      </button>
 
-          <span class="account-avatar">
-            ${avatar}
-          </span>
+      <div class="account-dropdown" id="accountDropdown">
 
-          <span class="account-user-name">
-            ${displayName}
-          </span>
-
-          <span aria-hidden="true">⌄</span>
-
-        </button>
-
-
-        <div
-          class="account-dropdown"
-          id="accountDropdown"
-          hidden>
-
-          <div class="account-info">
-            <strong>${displayName}</strong>
-            <small>${email}</small>
-          </div>
-
-          <a href="./candidate-dashboard.html">
-            My Dashboard
-          </a>
-
-          <a href="./profile.html">
-            My Profile / Edit Profile
-          </a>
-
-          <a href="./candidate-dashboard.html">
-            My Applications
-          </a>
-
-          <a href="./jobs.html">
-            Find Jobs
-          </a>
-
-          <button
-            type="button"
-            class="account-logout"
-            id="accountLogout">
-            Logout
-          </button>
-
+        <div class="account-user-info">
+          <strong>${escapeHTML(displayName)}</strong>
+          <small>${escapeHTML(user.email || "")}</small>
         </div>
+
+        <a href="${dashboardLink}">${dashboardLabel}</a>
+
+        ${isAdmin ? "" : `
+          <a href="./profile.html">My Profile</a>
+          <a href="./candidate-dashboard.html">My Applications</a>
+          <a href="./jobs.html">Find Jobs</a>
+        `}
+
+        <button type="button" class="account-logout" id="accountLogout">
+          Logout
+        </button>
 
       </div>
     `;
 
+    const menuButton = document.getElementById("accountUserButton");
+    const dropdown = document.getElementById("accountDropdown");
+    const logoutButton = document.getElementById("accountLogout");
 
-    const userButton =
-      document.getElementById("accountUserButton");
-
-    const dropdown =
-      document.getElementById("accountDropdown");
-
-    const logoutButton =
-      document.getElementById("accountLogout");
-
-
-    userButton.addEventListener("click", () => {
-
-      const isOpening = dropdown.hidden;
-
-      dropdown.hidden = !isOpening;
-
-      userButton.setAttribute(
-        "aria-expanded",
-        String(isOpening)
-      );
-
+    menuButton.addEventListener("click", () => {
+      const isOpen = dropdown.classList.toggle("show");
+      menuButton.setAttribute("aria-expanded", String(isOpen));
     });
-
 
     document.addEventListener("click", (event) => {
-
       if (!accountArea.contains(event.target)) {
-
-        dropdown.hidden = true;
-
-        userButton.setAttribute(
-          "aria-expanded",
-          "false"
-        );
-
+        dropdown.classList.remove("show");
+        menuButton.setAttribute("aria-expanded", "false");
       }
-
     });
-
-
-    document.addEventListener("keydown", (event) => {
-
-      if (event.key === "Escape") {
-
-        dropdown.hidden = true;
-
-        userButton.setAttribute(
-          "aria-expanded",
-          "false"
-        );
-
-      }
-
-    });
-
 
     logoutButton.addEventListener("click", async () => {
-
-      logoutButton.disabled = true;
-
-      logoutButton.textContent = "Signing out...";
-
       try {
-
         await signOut(auth);
-
-        window.location.replace("./login.html");
-
+        window.location.href = "./login.html";
       } catch (error) {
-
-        console.error("Logout Error:", error);
-
         alert("Logout failed. Please try again.");
-
-        logoutButton.disabled = false;
-
-        logoutButton.textContent = "Logout";
-
+        console.error(error);
       }
-
     });
-
-  }
-
-
-  // Check Firebase Login Status
-
-  onAuthStateChanged(auth, (user) => {
-
-    if (user) {
-
-      showLoggedIn(user);
-
-    } else {
-
-      showLoggedOut();
-
-    }
 
   });
 
+}
+
+function escapeHTML(value) {
+  return String(value).replace(/[&<>"']/g, (char) => ({
+    "&": "&amp;",
+    "<": "&lt;",
+    ">": "&gt;",
+    '"': "&quot;",
+    "'": "&#039;"
+  })[char]);
 }
