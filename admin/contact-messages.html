@@ -1,0 +1,476 @@
+
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Contact Messages | AG Careers Admin</title>
+<link rel="stylesheet" href="../assets/css/style.css">
+
+<style>
+.messages-toolbar {
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  gap:15px;
+  flex-wrap:wrap;
+  margin-bottom:20px;
+}
+
+.messages-search {
+  width:100%;
+  max-width:360px;
+  padding:12px 14px;
+  border:1px solid #ddd;
+  border-radius:8px;
+  font:inherit;
+  box-sizing:border-box;
+}
+
+.message-count {
+  color:#64748b;
+  font-size:14px;
+}
+
+.message-list {
+  display:grid;
+  gap:16px;
+}
+
+.message-card {
+  background:#fff;
+  border:1px solid #e5e7eb;
+  border-radius:12px;
+  padding:20px;
+  box-shadow:0 3px 12px rgba(0,0,0,.04);
+}
+
+.message-top {
+  display:flex;
+  justify-content:space-between;
+  align-items:flex-start;
+  gap:15px;
+  flex-wrap:wrap;
+  margin-bottom:14px;
+}
+
+.message-name {
+  font-size:17px;
+  font-weight:700;
+  color:#173b35;
+  margin:0 0 5px;
+}
+
+.message-email {
+  color:#2563eb;
+  font-size:14px;
+  overflow-wrap:anywhere;
+}
+
+.message-date {
+  color:#777;
+  font-size:12px;
+}
+
+.message-subject {
+  font-weight:700;
+  color:#333;
+  margin:12px 0 8px;
+}
+
+.message-body {
+  color:#475569;
+  line-height:1.7;
+  white-space:pre-wrap;
+  overflow-wrap:anywhere;
+  background:#f8fafc;
+  padding:14px;
+  border-radius:8px;
+}
+
+.message-reply {
+  display:inline-block;
+  margin-top:14px;
+  color:#173b35;
+  font-weight:600;
+  text-decoration:none;
+}
+
+.message-reply:hover {
+  text-decoration:underline;
+}
+
+.message-status {
+  padding:25px;
+  background:#fff;
+  border:1px solid #e5e7eb;
+  border-radius:10px;
+  color:#64748b;
+  text-align:center;
+}
+
+.error-status {
+  color:#b42318;
+}
+
+@media(max-width:600px) {
+  .message-card {
+    padding:15px;
+  }
+}
+</style>
+</head>
+
+<body class="adminbody">
+
+<div class="adminlayout">
+
+<aside class="sidebar">
+
+<a class="brand" href="./dashboard.html">
+<span class="brandmark">AG</span>
+<span>ADITYA GURUKUL
+<small style="color:#b6c7d3">ADMIN PORTAL</small>
+</span>
+</a>
+
+<a class="side-link" href="./dashboard.html">Dashboard</a>
+<a class="side-link" href="./candidates.html">Candidates</a>
+<a class="side-link" href="./jobs.html">Jobs</a>
+<a class="side-link" href="./applications.html">Applications</a>
+<a class="side-link active" href="./contact-messages.html">Contact Messages</a>
+<a class="side-link" href="./settings.html">Settings</a>
+<a class="side-link" href="../index.html">← View website</a>
+
+</aside>
+
+<main class="adminmain">
+
+<div class="kicker">Administration</div>
+<h1>Contact Messages</h1>
+<p class="muted">
+Messages submitted through the website Contact Form.
+</p>
+
+<section class="panel">
+
+<div class="messages-toolbar">
+
+<div>
+<h3 style="margin-bottom:5px;">Inbox</h3>
+<div class="message-count" id="messageCount">
+Loading messages...
+</div>
+</div>
+
+<button type="button" class="btn btn-primary" id="refreshMessages">
+Refresh
+</button>
+
+</div>
+
+<input
+  type="search"
+  id="messageSearch"
+  class="messages-search"
+  placeholder="Search name, email or subject..."
+  aria-label="Search contact messages"
+>
+
+</section>
+
+<div id="messageStatus" class="message-status">
+Loading contact messages...
+</div>
+
+<div id="messageList" class="message-list"></div>
+
+</main>
+</div>
+
+<script src="../assets/js/main.js"></script>
+
+<script type="module">
+
+import { auth, db } from "../assets/js/firebase.js";
+
+import {
+  onAuthStateChanged,
+  signOut
+} from "https://www.gstatic.com/firebasejs/13.4.0/firebase-auth.js";
+
+import {
+  doc,
+  getDoc,
+  collection,
+  query,
+  orderBy,
+  limit,
+  getDocs
+} from "https://www.gstatic.com/firebasejs/13.4.0/firebase-firestore.js";
+
+const allowedRoles = [
+  "super_admin",
+  "admin",
+  "recruitment_manager",
+  "exam_controller",
+  "content_manager",
+  "viewer"
+];
+
+const messageStatus = document.getElementById("messageStatus");
+const messageList = document.getElementById("messageList");
+const messageCount = document.getElementById("messageCount");
+const messageSearch = document.getElementById("messageSearch");
+const refreshButton = document.getElementById("refreshMessages");
+
+let allMessages = [];
+
+document.body.style.display = "none";
+
+function formatDate(timestamp) {
+
+  if (!timestamp || typeof timestamp.toDate !== "function") {
+    return "Date unavailable";
+  }
+
+  return timestamp.toDate().toLocaleString("en-IN", {
+    day: "2-digit",
+    month: "short",
+    year: "numeric",
+    hour: "2-digit",
+    minute: "2-digit"
+  });
+
+}
+
+function createTextElement(tag, className, value) {
+
+  const element = document.createElement(tag);
+  element.className = className;
+  element.textContent = value || "";
+
+  return element;
+
+}
+
+function renderMessages(messages) {
+
+  messageList.replaceChildren();
+
+  messageCount.textContent =
+    messages.length + " message(s) displayed";
+
+  if (messages.length === 0) {
+
+    messageStatus.style.display = "block";
+    messageStatus.textContent =
+      allMessages.length === 0
+        ? "No contact messages have been received yet."
+        : "No messages match your search.";
+
+    return;
+
+  }
+
+  messageStatus.style.display = "none";
+
+  messages.forEach((message) => {
+
+    const card = document.createElement("article");
+    card.className = "message-card";
+
+    const top = document.createElement("div");
+    top.className = "message-top";
+
+    const identity = document.createElement("div");
+
+    identity.appendChild(
+      createTextElement(
+        "h3",
+        "message-name",
+        message.name || "Unknown sender"
+      )
+    );
+
+    const email = createTextElement(
+      "div",
+      "message-email",
+      message.email || "Email unavailable"
+    );
+
+    identity.appendChild(email);
+
+    const date = createTextElement(
+      "div",
+      "message-date",
+      formatDate(message.createdAt)
+    );
+
+    top.appendChild(identity);
+    top.appendChild(date);
+
+    card.appendChild(top);
+
+    card.appendChild(
+      createTextElement(
+        "div",
+        "message-subject",
+        "Subject: " + (message.subject || "No subject")
+      )
+    );
+
+    card.appendChild(
+      createTextElement(
+        "div",
+        "message-body",
+        message.message || "No message content"
+      )
+    );
+
+    if (message.email) {
+
+      const reply = document.createElement("a");
+
+      reply.className = "message-reply";
+      reply.textContent = "Reply by Email";
+      reply.href = "mailto:" + encodeURIComponent(message.email);
+
+      card.appendChild(reply);
+
+    }
+
+    messageList.appendChild(card);
+
+  });
+
+}
+
+function filterMessages() {
+
+  const searchText = messageSearch.value
+    .trim()
+    .toLowerCase();
+
+  const filtered = allMessages.filter((message) => {
+
+    const searchableText = [
+      message.name,
+      message.email,
+      message.subject,
+      message.message
+    ].join(" ").toLowerCase();
+
+    return searchableText.includes(searchText);
+
+  });
+
+  renderMessages(filtered);
+
+}
+
+async function loadMessages() {
+
+  messageStatus.style.display = "block";
+  messageStatus.className = "message-status";
+  messageStatus.textContent = "Loading contact messages...";
+
+  messageList.replaceChildren();
+
+  refreshButton.disabled = true;
+  refreshButton.textContent = "Loading...";
+
+  try {
+
+    const messagesQuery = query(
+      collection(db, "contact_messages"),
+      orderBy("createdAt", "desc"),
+      limit(100)
+    );
+
+    const snapshot = await getDocs(messagesQuery);
+
+    allMessages = snapshot.docs.map((document) => ({
+      id: document.id,
+      ...document.data()
+    }));
+
+    filterMessages();
+
+  } catch (error) {
+
+    console.error("Contact messages loading error:", error);
+
+    messageStatus.style.display = "block";
+    messageStatus.className = "message-status error-status";
+    messageStatus.textContent =
+      "Unable to load messages. Please check Firestore permissions and try again.";
+
+    messageCount.textContent = "Messages could not be loaded.";
+
+  } finally {
+
+    refreshButton.disabled = false;
+    refreshButton.textContent = "Refresh";
+
+  }
+
+}
+
+messageSearch.addEventListener("input", filterMessages);
+
+refreshButton.addEventListener("click", loadMessages);
+
+onAuthStateChanged(auth, async (user) => {
+
+  if (!user) {
+
+    window.location.replace("../login.html");
+    return;
+
+  }
+
+  try {
+
+    const adminRef = doc(db, "admins", user.uid);
+    const adminSnap = await getDoc(adminRef);
+
+    if (!adminSnap.exists()) {
+
+      await signOut(auth);
+      window.location.replace("../login.html");
+      return;
+
+    }
+
+    const adminData = adminSnap.data();
+
+    if (
+      adminData.status !== "active" ||
+      !allowedRoles.includes(adminData.role)
+    ) {
+
+      await signOut(auth);
+      window.location.replace("../login.html");
+      return;
+
+    }
+
+    document.body.style.display = "";
+
+    await loadMessages();
+
+  } catch (error) {
+
+    console.error("Admin verification error:", error);
+
+    window.location.replace("../login.html");
+
+  }
+
+});
+
+</script>
+
+</body>
+</html>
