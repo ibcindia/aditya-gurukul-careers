@@ -183,11 +183,11 @@ aria-expanded="false">
 <small id="adminMenuRole"></small>
 </div>
 
-<a class="admin-menu-link" href="./profile.html">
+<a class="admin-menu-link" href="profile.html">
 My Profile
 </a>
 
-<a class="admin-menu-link" href="./settings.html">
+<a class="admin-menu-link" href="settings.html">
 Settings
 </a>
 
@@ -288,7 +288,7 @@ const adminAccount = document.getElementById("adminAccount");
 
 document.body.style.display = "none";
 
-// Account menu
+// Account menu open / close
 accountButton.addEventListener("click", () => {
 
   const isOpen = accountDropdown.classList.toggle("show");
@@ -379,7 +379,7 @@ async function loadDashboardStats() {
 
 }
 
-// Admin verification and profile loading
+// Verify admin and load profile
 onAuthStateChanged(auth, async (user) => {
 
   if (!user) {
@@ -411,7 +411,7 @@ onAuthStateChanged(auth, async (user) => {
 
     }
 
-    // Load saved admin profile
+    // Read saved admin profile
     let profileData = {};
 
     try {
@@ -426,7 +426,7 @@ onAuthStateChanged(auth, async (user) => {
 
     } catch (profileError) {
 
-      console.error("Admin profile loading:", profileError);
+      console.error("Admin profile loading error:", profileError);
 
     }
 
