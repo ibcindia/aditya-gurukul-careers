@@ -7,6 +7,7 @@
 <meta name="description" content="Aditya Gurukul Careers – Candidate Dashboard">
 <title>Candidate Dashboard | Aditya Gurukul Careers</title>
 <link rel="stylesheet" href="./assets/css/style.css">
+
 <style>
 .dashboard-welcome{margin-bottom:25px}
 .stats-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:18px;margin-bottom:30px}
@@ -18,7 +19,10 @@
 .status-pill{display:inline-block;padding:5px 10px;border-radius:20px;background:#edf2f7;font-size:12px}
 .dashboard-message{padding:16px;background:#f4f6f9;border-radius:8px}
 #dashboardContent{display:none}
-@media(max-width:600px){.data-table{font-size:12px}.data-table th,.data-table td{padding:8px}}
+@media(max-width:600px){
+  .data-table{font-size:12px}
+  .data-table th,.data-table td{padding:8px}
+}
 </style>
 </head>
 
@@ -33,20 +37,25 @@ Education Career & Recruitment Portal
 
 <header class="navbar">
 <div class="container navinner">
+
 <a class="brand" href="./index.html">
 <span class="brandmark">AG</span>
 <span>ADITYA GURUKUL<small>CAREERS</small></span>
 </a>
+
 <nav class="navlinks">
 <a href="./index.html">Home</a>
 <a href="./about.html">About</a>
 <a href="./jobs.html">Find Jobs</a>
 <a href="./contact.html">Contact</a>
 </nav>
-<div>
-<a class="btn secondary" href="./profile.html">My Profile</a>
-<button class="btn" id="logoutBtn" type="button">Logout</button>
+
+<!-- USER ACCOUNT MENU -->
+<div id="accountArea">
+<a class="btn secondary" href="./login.html">Login</a>
+<a class="btn" href="./register.html">Register</a>
 </div>
+
 </div>
 </header>
 
@@ -112,7 +121,11 @@ Loading your dashboard...
 
 <div class="dashboard-section" id="myApplications">
 <h2>My Applications</h2>
-<div id="applicationsMessage" class="dashboard-message">Loading applications...</div>
+
+<div id="applicationsMessage" class="dashboard-message">
+Loading applications...
+</div>
+
 <div style="overflow-x:auto">
 <table class="data-table" id="applicationsTable" style="display:none">
 <thead>
@@ -129,8 +142,13 @@ Loading your dashboard...
 
 <div class="dashboard-section">
 <h2>Latest Job Opportunities</h2>
-<div id="jobsMessage" class="dashboard-message">Loading jobs...</div>
+
+<div id="jobsMessage" class="dashboard-message">
+Loading jobs...
+</div>
+
 <div class="cards" id="latestJobs"></div>
+
 <a class="btn secondary" href="./jobs.html">View All Jobs</a>
 </div>
 
@@ -140,37 +158,46 @@ Loading your dashboard...
 
 <footer class="footer">
 <div class="container">
+
 <div class="footergrid">
+
 <div>
 <h3>ADITYA GURUKUL CAREERS</h3>
 <p>Connecting education professionals with meaningful career opportunities across Maharashtra.</p>
 </div>
+
 <div>
 <h3>Explore</h3>
 <a href="./jobs.html">Find Jobs</a>
 <a href="./about.html">About Us</a>
 <a href="./register.html">Candidate Registration</a>
 </div>
+
 <div>
 <h3>Candidate</h3>
 <a href="./profile.html">My Profile</a>
 <a href="./candidate-dashboard.html">Dashboard</a>
 </div>
+
 <div>
 <h3>Information</h3>
 <a href="./privacy.html">Privacy Policy</a>
 <a href="./terms.html">Terms</a>
 </div>
+
 </div>
+
 <div class="copyright">
 © <span data-year></span> Aditya Gurukul Careers. All rights reserved.
 </div>
+
 </div>
 </footer>
 
 <script src="./assets/js/main.js"></script>
 
 <script type="module">
+
 import { auth, db } from "./assets/js/firebase.js";
 
 import {
@@ -187,24 +214,37 @@ import {
  where
 } from "https://www.gstatic.com/firebasejs/13.4.0/firebase-firestore.js";
 
+
 const loadingMessage = document.getElementById("loadingMessage");
 const errorMessage = document.getElementById("errorMessage");
 const dashboardContent = document.getElementById("dashboardContent");
 
+
 function showError(message){
+
  loadingMessage.style.display = "none";
  dashboardContent.style.display = "none";
  errorMessage.style.display = "block";
  errorMessage.textContent = message;
+
 }
+
 
 function safeDate(value){
+
  if(!value) return "—";
- if(value.toDate) return value.toDate().toLocaleDateString("en-IN");
+
+ if(value.toDate){
+  return value.toDate().toLocaleDateString("en-IN");
+ }
+
  return "—";
+
 }
 
+
 function calculateCompletion(profile){
+
  const fields = [
   "fullName",
   "mobile",
@@ -215,13 +255,19 @@ function calculateCompletion(profile){
   "preferredLocation",
   "skills"
  ];
+
  const completed = fields.filter(field =>
   profile[field] !== undefined &&
   profile[field] !== null &&
   String(profile[field]).trim() !== ""
  ).length;
+
  return Math.round((completed / fields.length) * 100);
+
 }
+
+
+// AUTHENTICATION
 
 onAuthStateChanged(auth, async (user) => {
 
@@ -232,12 +278,19 @@ onAuthStateChanged(auth, async (user) => {
 
  try{
 
+  // CANDIDATE PROFILE
+
   const profileRef = doc(db,"candidates",user.uid);
   const profileSnap = await getDoc(profileRef);
 
   if(!profileSnap.exists()){
-   showError("Candidate profile not found. Please complete your registration first.");
+
+   showError(
+    "Candidate profile not found. Please complete your registration first."
+   );
+
    return;
+
   }
 
   const profile = profileSnap.data();
@@ -245,8 +298,16 @@ onAuthStateChanged(auth, async (user) => {
   document.getElementById("candidateName").textContent =
    profile.fullName || user.displayName || "Candidate";
 
+
+  // PROFILE COMPLETION
+
   const completion = calculateCompletion(profile);
-  document.getElementById("profileCompletion").textContent = completion + "%";
+
+  document.getElementById("profileCompletion").textContent =
+   completion + "%";
+
+
+  // PROFILE SUMMARY
 
   document.getElementById("profileSummary").textContent =
    (profile.qualification || "Qualification not added") +
@@ -255,26 +316,35 @@ onAuthStateChanged(auth, async (user) => {
    " | " +
    (profile.location || "Location not added");
 
-  // Published jobs
+
+  // PUBLISHED JOBS
+
   const jobsQuery = query(
    collection(db,"jobs"),
    where("status","==","published")
   );
 
   const jobsSnap = await getDocs(jobsQuery);
-  document.getElementById("totalJobs").textContent = jobsSnap.size;
+
+  document.getElementById("totalJobs").textContent =
+   jobsSnap.size;
 
   const latestJobs = document.getElementById("latestJobs");
   const jobsMessage = document.getElementById("jobsMessage");
 
   if(jobsSnap.empty){
-   jobsMessage.textContent = "No published job opportunities are available currently.";
+
+   jobsMessage.textContent =
+    "No published job opportunities are available currently.";
+
   }else{
+
    jobsMessage.style.display = "none";
 
    const jobs = jobsSnap.docs.slice(0,5);
 
    jobs.forEach(jobDoc => {
+
     const job = jobDoc.data();
 
     const card = document.createElement("div");
@@ -284,22 +354,33 @@ onAuthStateChanged(auth, async (user) => {
     title.textContent = job.jobTitle || "Job Opportunity";
 
     const department = document.createElement("p");
-    department.textContent = "Department: " + (job.department || "—");
+    department.textContent =
+     "Department: " + (job.department || "—");
 
     const location = document.createElement("p");
-    location.textContent = "Location: " + (job.location || "—");
+    location.textContent =
+     "Location: " + (job.location || "—");
 
     const link = document.createElement("a");
     link.className = "btn secondary";
-    link.href = "./job-details.html?id=" + encodeURIComponent(jobDoc.id);
+
+    link.href =
+     "./job-details.html?id=" +
+     encodeURIComponent(jobDoc.id);
+
     link.textContent = "View Details";
 
     card.append(title,department,location,link);
+
     latestJobs.appendChild(card);
+
    });
+
   }
 
-  // Candidate applications
+
+  // CANDIDATE APPLICATIONS
+
   const applicationsQuery = query(
    collection(db,"applications"),
    where("userId","==",user.uid)
@@ -310,71 +391,110 @@ onAuthStateChanged(auth, async (user) => {
   document.getElementById("totalApplications").textContent =
    applicationsSnap.size;
 
+
+  // SHORTLISTED APPLICATIONS
+
   const shortlisted = applicationsSnap.docs.filter(item =>
    item.data().status === "shortlisted"
   ).length;
 
-  document.getElementById("shortlistedApplications").textContent = shortlisted;
+  document.getElementById("shortlistedApplications").textContent =
+   shortlisted;
 
-  const applicationsBody = document.getElementById("applicationsBody");
-  const applicationsTable = document.getElementById("applicationsTable");
-  const applicationsMessage = document.getElementById("applicationsMessage");
+
+  // APPLICATION TABLE
+
+  const applicationsBody =
+   document.getElementById("applicationsBody");
+
+  const applicationsTable =
+   document.getElementById("applicationsTable");
+
+  const applicationsMessage =
+   document.getElementById("applicationsMessage");
+
 
   if(applicationsSnap.empty){
-   applicationsMessage.textContent = "You have not submitted any applications yet.";
+
+   applicationsMessage.textContent =
+    "You have not submitted any applications yet.";
+
   }else{
 
    applicationsMessage.style.display = "none";
    applicationsTable.style.display = "table";
 
    const applications = applicationsSnap.docs.sort((a,b) => {
+
     const aDate = a.data().appliedAt?.toMillis?.() || 0;
     const bDate = b.data().appliedAt?.toMillis?.() || 0;
+
     return bDate - aDate;
+
    });
 
+
    applications.forEach(applicationDoc => {
+
     const application = applicationDoc.data();
 
     const row = document.createElement("tr");
 
     const jobCell = document.createElement("td");
-    jobCell.textContent = application.jobTitle || "Job Application";
+
+    jobCell.textContent =
+     application.jobTitle || "Job Application";
+
 
     const dateCell = document.createElement("td");
-    dateCell.textContent = safeDate(application.appliedAt);
+
+    dateCell.textContent =
+     safeDate(application.appliedAt);
+
 
     const statusCell = document.createElement("td");
+
     const status = document.createElement("span");
+
     status.className = "status-pill";
-    status.textContent = application.status || "submitted";
+
+    status.textContent =
+     application.status || "submitted";
 
     statusCell.appendChild(status);
+
     row.append(jobCell,dateCell,statusCell);
+
     applicationsBody.appendChild(row);
+
    });
+
   }
+
+
+  // SHOW DASHBOARD
 
   loadingMessage.style.display = "none";
   dashboardContent.style.display = "block";
 
+
  }catch(error){
+
   console.error("Dashboard error:",error);
-  showError("Unable to load dashboard. Please refresh and try again. " + error.message);
+
+  showError(
+   "Unable to load dashboard. Please refresh and try again. " +
+   error.message
+  );
+
  }
 
-});
-
-document.getElementById("logoutBtn").addEventListener("click", async () => {
- try{
-  await signOut(auth);
-  window.location.href = "./login.html";
- }catch(error){
-  alert("Unable to sign out. Please try again.");
- }
 });
 
 </script>
+
+<!-- FIREBASE USER ACCOUNT MENU -->
+<script type="module" src="./assets/js/account-menu.js"></script>
 
 </body>
 </html>
