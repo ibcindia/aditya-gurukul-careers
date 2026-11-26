@@ -4,7 +4,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<meta name="description" content="Aditya Gurukul Careers – Education Career & Recruitment Portal">
+<meta name="description" content="Contact Aditya Gurukul Careers for portal assistance and recruitment-related queries.">
 <title>Contact | Aditya Gurukul Careers</title>
 <link rel="stylesheet" href="./assets/css/style.css">
 </head>
@@ -33,7 +33,6 @@
       <a href="./contact.html">Contact</a>
     </nav>
 
-    <!-- USER ACCOUNT MENU -->
     <div id="accountArea">
       <a class="btn secondary" href="./login.html">Login</a>
       <a class="btn" href="./register.html">Register</a>
@@ -44,36 +43,78 @@
 
 <section class="pagehero">
   <div class="container">
-    <h1>Get in touch</h1>
+    <h1>Get in Touch</h1>
     <p class="muted">
-      For portal assistance and recruitment-related queries.
+      For portal assistance, candidate support and recruitment-related queries.
     </p>
   </div>
 </section>
 
-<form class="formwrap" data-demo-form>
+<section class="section">
+  <div class="container">
 
-  <label>Name</label>
-  <input required>
+    <form class="formwrap" id="contactForm">
 
-  <label>Email</label>
-  <input type="email" required>
+      <label for="contactName">Full Name</label>
+      <input
+        id="contactName"
+        name="name"
+        type="text"
+        minlength="2"
+        maxlength="100"
+        autocomplete="name"
+        placeholder="Enter your full name"
+        required
+      >
 
-  <label>Subject</label>
-  <input required>
+      <label for="contactEmail">Email Address</label>
+      <input
+        id="contactEmail"
+        name="email"
+        type="email"
+        maxlength="150"
+        autocomplete="email"
+        placeholder="Enter your email address"
+        required
+      >
 
-  <label>Message</label>
-  <textarea rows="5" required></textarea>
+      <label for="contactSubject">Subject</label>
+      <input
+        id="contactSubject"
+        name="subject"
+        type="text"
+        minlength="3"
+        maxlength="150"
+        placeholder="Enter message subject"
+        required
+      >
 
-  <button class="btn">Send Message</button>
+      <label for="contactMessage">Message</label>
+      <textarea
+        id="contactMessage"
+        name="message"
+        rows="6"
+        minlength="10"
+        maxlength="5000"
+        placeholder="Write your message here..."
+        required
+      ></textarea>
 
-  <p data-message class="muted"></p>
+      <button class="btn" id="sendMessageBtn" type="submit">
+        Send Message
+      </button>
 
-  <div class="notice">
-    Demo form. Add a verified support email and secure form handler before launch.
+      <p id="contactStatus" class="muted" role="status" aria-live="polite"></p>
+
+      <div class="notice">
+        Please do not include passwords, bank details or other highly sensitive
+        personal information in this form.
+      </div>
+
+    </form>
+
   </div>
-
-</form>
+</section>
 
 <footer class="footer">
   <div class="container">
@@ -105,7 +146,7 @@
       <div>
         <h3>Information</h3>
         <a href="./privacy.html">Privacy Policy</a>
-        <a href="./terms.html">Terms</a>
+        <a href="./terms.html">Terms & Conditions</a>
         <a href="./admin/index.html">Administrator</a>
       </div>
 
@@ -119,9 +160,64 @@
 </footer>
 
 <script src="./assets/js/main.js"></script>
-
-<!-- FIREBASE USER ACCOUNT MENU -->
 <script type="module" src="./assets/js/account-menu.js"></script>
+
+<script type="module">
+import { db } from "./assets/js/firebase.js";
+
+import {
+  addDoc,
+  collection,
+  serverTimestamp
+} from "https://www.gstatic.com/firebasejs/13.4.0/firebase-firestore.js";
+
+const form = document.getElementById("contactForm");
+const statusText = document.getElementById("contactStatus");
+const sendButton = document.getElementById("sendMessageBtn");
+
+form.addEventListener("submit", async (event) => {
+  event.preventDefault();
+
+  if (!form.reportValidity()) return;
+
+  const name = document.getElementById("contactName").value.trim();
+  const email = document.getElementById("contactEmail").value.trim();
+  const subject = document.getElementById("contactSubject").value.trim();
+  const message = document.getElementById("contactMessage").value.trim();
+
+  if (name.length < 2 || subject.length < 3 || message.length < 10) {
+    statusText.textContent = "Please enter valid information in all fields.";
+    return;
+  }
+
+  sendButton.disabled = true;
+  sendButton.textContent = "Sending...";
+  statusText.textContent = "";
+
+  try {
+    await addDoc(collection(db, "contact_messages"), {
+      name,
+      email,
+      subject,
+      message,
+      createdAt: serverTimestamp()
+    });
+
+    form.reset();
+    statusText.textContent =
+      "Thank you! Your message has been submitted successfully.";
+
+  } catch (error) {
+    console.error("Contact form error:", error);
+
+    statusText.textContent =
+      "Unable to send your message right now. Please try again later.";
+  } finally {
+    sendButton.disabled = false;
+    sendButton.textContent = "Send Message";
+  }
+});
+</script>
 
 </body>
 </html>
