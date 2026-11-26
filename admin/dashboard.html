@@ -6,6 +6,127 @@
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Dashboard | AG Careers Admin</title>
 <link rel="stylesheet" href="../assets/css/style.css">
+
+<style>
+.adminhead {
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  gap:20px;
+  flex-wrap:wrap;
+}
+
+.admin-account {
+  position:relative;
+  z-index:1000;
+}
+
+.admin-account-btn {
+  display:flex;
+  align-items:center;
+  gap:10px;
+  padding:8px 14px;
+  background:#fff;
+  border:1px solid #d7c6a0;
+  border-radius:30px;
+  color:#173b35;
+  cursor:pointer;
+  font:inherit;
+  font-weight:600;
+}
+
+.admin-avatar {
+  width:36px;
+  height:36px;
+  border-radius:50%;
+  background:#173b35;
+  color:white;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-weight:700;
+  overflow:hidden;
+}
+
+.admin-avatar img {
+  width:100%;
+  height:100%;
+  object-fit:cover;
+}
+
+.admin-dropdown {
+  display:none;
+  position:absolute;
+  top:calc(100% + 10px);
+  right:0;
+  width:260px;
+  background:white;
+  border:1px solid #e5e5e5;
+  border-radius:12px;
+  box-shadow:0 12px 35px rgba(0,0,0,.16);
+  padding:10px;
+}
+
+.admin-dropdown.show {
+  display:block;
+}
+
+.admin-profile-info {
+  padding:12px;
+  border-bottom:1px solid #eee;
+  margin-bottom:7px;
+  overflow-wrap:anywhere;
+}
+
+.admin-profile-info strong {
+  display:block;
+  color:#173b35;
+  font-size:15px;
+}
+
+.admin-profile-info small {
+  display:block;
+  color:#777;
+  margin-top:5px;
+  font-size:12px;
+}
+
+.admin-menu-link,
+.admin-logout {
+  display:block;
+  width:100%;
+  padding:11px 12px;
+  text-decoration:none;
+  color:#333;
+  background:transparent;
+  border:0;
+  border-radius:7px;
+  text-align:left;
+  font:inherit;
+  font-size:14px;
+  cursor:pointer;
+  box-sizing:border-box;
+}
+
+.admin-menu-link:hover,
+.admin-logout:hover {
+  background:#f3f6f4;
+  color:#173b35;
+}
+
+.admin-logout {
+  border-top:1px solid #eee;
+  margin-top:6px;
+  color:#b42318;
+}
+
+@media(max-width:600px) {
+  .admin-dropdown {
+    right:0;
+    width:240px;
+  }
+}
+</style>
 </head>
 
 <body class="adminbody">
@@ -27,19 +148,59 @@
 <a class="side-link" href="../admin/applications.html">Applications</a>
 <a class="side-link" href="../admin/settings.html">Settings</a>
 <a class="side-link" href="../index.html">← View website</a>
-<a class="side-link" href="#" id="logoutButton">Sign out</a>
 
 </aside>
 
 <main class="adminmain">
 
 <div class="adminhead">
+
 <div>
 <div class="kicker">Administration</div>
 <h1>Dashboard</h1>
 <p id="adminWelcome" class="muted">Verifying administrator access...</p>
 </div>
-<span class="pill">Admin Portal</span>
+
+<div class="admin-account" id="adminAccount">
+
+<button type="button"
+class="admin-account-btn"
+id="adminAccountButton"
+aria-expanded="false">
+
+<span class="admin-avatar" id="adminAvatar">A</span>
+<span>My Account</span>
+<span>▾</span>
+
+</button>
+
+<div class="admin-dropdown" id="adminDropdown">
+
+<div class="admin-profile-info">
+<strong id="adminMenuName">Administrator</strong>
+<small id="adminMenuEmail"></small>
+<small id="adminMenuRole"></small>
+</div>
+
+<div class="admin-menu-link" style="font-weight:700;color:#173b35">
+My Profile
+</div>
+
+<a class="admin-menu-link" href="./settings.html">
+Settings
+</a>
+
+<a class="admin-menu-link" href="../index.html">
+View Website
+</a>
+
+<button type="button" class="admin-logout" id="accountLogout">
+Logout
+</button>
+
+</div>
+</div>
+
 </div>
 
 <div class="metricgrid">
@@ -117,12 +278,36 @@ const allowedRoles = [
 ];
 
 const welcome = document.getElementById("adminWelcome");
-const logoutButton = document.getElementById("logoutButton");
 const overviewMessage = document.getElementById("overviewMessage");
+
+const accountButton = document.getElementById("adminAccountButton");
+const accountDropdown = document.getElementById("adminDropdown");
+const accountLogout = document.getElementById("accountLogout");
+const adminAccount = document.getElementById("adminAccount");
 
 document.body.style.display = "none";
 
-// Get count from Firestore
+// Account menu
+accountButton.addEventListener("click", () => {
+
+  const isOpen = accountDropdown.classList.toggle("show");
+
+  accountButton.setAttribute("aria-expanded", String(isOpen));
+
+});
+
+document.addEventListener("click", (event) => {
+
+  if (!adminAccount.contains(event.target)) {
+
+    accountDropdown.classList.remove("show");
+    accountButton.setAttribute("aria-expanded", "false");
+
+  }
+
+});
+
+// Collection count
 async function getCollectionCount(collectionName, conditions = []) {
 
   const collectionRef = collection(db, collectionName);
@@ -134,9 +319,10 @@ async function getCollectionCount(collectionName, conditions = []) {
   const snapshot = await getCountFromServer(countQuery);
 
   return snapshot.data().count;
+
 }
 
-// Load dashboard statistics
+// Dashboard statistics
 async function loadDashboardStats() {
 
   try {
@@ -193,7 +379,7 @@ async function loadDashboardStats() {
 
 }
 
-// Verify administrator
+// Admin verification
 onAuthStateChanged(auth, async (user) => {
 
   if (!user) {
@@ -218,13 +404,42 @@ onAuthStateChanged(auth, async (user) => {
       adminData.status !== "active" ||
       !allowedRoles.includes(adminData.role)
     ) {
+
       await signOut(auth);
       window.location.replace("../login.html");
       return;
+
     }
 
-    welcome.textContent =
-      "Welcome, " + (adminData.fullName || user.displayName || "Administrator");
+    const adminName =
+      adminData.fullName || user.displayName || "Administrator";
+
+    welcome.textContent = "Welcome, " + adminName;
+
+    document.getElementById("adminMenuName").textContent = adminName;
+
+    document.getElementById("adminMenuEmail").textContent =
+      user.email || "";
+
+    document.getElementById("adminMenuRole").textContent =
+      "Role: " + (adminData.role || "Administrator").replaceAll("_", " ");
+
+    const avatar = document.getElementById("adminAvatar");
+
+    if (user.photoURL) {
+
+      const image = document.createElement("img");
+      image.src = user.photoURL;
+      image.alt = "Admin Profile";
+
+      avatar.textContent = "";
+      avatar.appendChild(image);
+
+    } else {
+
+      avatar.textContent = adminName.trim().charAt(0).toUpperCase();
+
+    }
 
     document.body.style.display = "";
 
@@ -234,17 +449,14 @@ onAuthStateChanged(auth, async (user) => {
 
     console.error("Admin verification error:", error);
 
-    // Fail closed: do not display the admin dashboard
     window.location.replace("../login.html");
 
   }
 
 });
 
-// Sign out
-logoutButton.addEventListener("click", async (event) => {
-
-  event.preventDefault();
+// Logout
+accountLogout.addEventListener("click", async () => {
 
   try {
 
@@ -253,7 +465,7 @@ logoutButton.addEventListener("click", async (event) => {
 
   } catch (error) {
 
-    alert("Sign out failed. Please try again.");
+    alert("Logout failed. Please try again.");
     console.error(error);
 
   }
