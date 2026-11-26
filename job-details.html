@@ -288,12 +288,16 @@ applicationMessage.textContent = "";
 
 try{
 
+await authReady;
+
 let user = auth.currentUser;
 
 // Google sign-in if candidate is not logged in
 if(!user){
 
 applicationMessage.textContent = "Please sign in with your Google Account.";
+
+await setPersistence(auth,browserLocalPersistence);
 
 const result = await signInWithPopup(auth,googleProvider);
 user = result.user;
