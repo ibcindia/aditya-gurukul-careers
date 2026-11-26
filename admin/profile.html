@@ -1,1 +1,411 @@
 
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Admin Profile | AG Careers</title>
+<link rel="stylesheet" href="../assets/css/style.css">
+
+<style>
+.profile-wrap {
+  max-width:800px;
+}
+
+.profile-card {
+  background:#fff;
+  border:1px solid #e5e7eb;
+  border-radius:14px;
+  padding:25px;
+  margin-top:22px;
+}
+
+.profile-photo {
+  width:100px;
+  height:100px;
+  border-radius:50%;
+  background:#173b35;
+  color:white;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-size:35px;
+  font-weight:700;
+  overflow:hidden;
+  margin-bottom:15px;
+}
+
+.profile-photo img {
+  width:100%;
+  height:100%;
+  object-fit:cover;
+}
+
+.profile-field {
+  margin:17px 0;
+}
+
+.profile-field label {
+  display:block;
+  font-weight:600;
+  margin-bottom:7px;
+}
+
+.profile-field input {
+  width:100%;
+  box-sizing:border-box;
+  padding:12px;
+  border:1px solid #d5d9dc;
+  border-radius:8px;
+  font:inherit;
+}
+
+.profile-field input:disabled {
+  background:#f1f3f4;
+  color:#777;
+}
+
+.profile-actions {
+  display:flex;
+  gap:12px;
+  flex-wrap:wrap;
+  margin-top:22px;
+}
+
+.profile-status {
+  margin-top:15px;
+  font-size:14px;
+}
+
+@media(max-width:600px) {
+  .profile-card {
+    padding:17px;
+  }
+}
+</style>
+</head>
+
+<body class="adminbody">
+
+<div class="adminlayout">
+
+<aside class="sidebar">
+
+<a class="brand" href="./dashboard.html">
+<span class="brandmark">AG</span>
+<span>ADITYA GURUKUL
+<small style="color:#b6c7d3">ADMIN PORTAL</small>
+</span>
+</a>
+
+<a class="side-link" href="./dashboard.html">Dashboard</a>
+<a class="side-link" href="./candidates.html">Candidates</a>
+<a class="side-link" href="./jobs.html">Jobs</a>
+<a class="side-link" href="./applications.html">Applications</a>
+<a class="side-link" href="./settings.html">Settings</a>
+<a class="side-link active" href="./profile.html">My Profile</a>
+<a class="side-link" href="../index.html">← View website</a>
+<a class="side-link" href="#" id="logoutButton">Sign out</a>
+
+</aside>
+
+<main class="adminmain">
+
+<div class="adminhead">
+<div>
+<div class="kicker">Administrator Account</div>
+<h1>My Profile</h1>
+<p class="muted">Manage your administrator information.</p>
+</div>
+<span class="pill">Admin Portal</span>
+</div>
+
+<div class="profile-wrap">
+
+<section class="profile-card">
+
+<div class="profile-photo" id="profilePhoto">A</div>
+
+<h3>Profile Information</h3>
+<p class="muted">
+Update your personal and professional details.
+</p>
+
+<form id="profileForm">
+
+<div class="profile-field">
+<label for="fullName">Full Name</label>
+<input type="text" id="fullName" required maxlength="100">
+</div>
+
+<div class="profile-field">
+<label for="email">Email Address</label>
+<input type="email" id="email" disabled>
+</div>
+
+<div class="profile-field">
+<label for="mobile">Mobile Number</label>
+<input type="tel" id="mobile" maxlength="15" placeholder="Enter mobile number">
+</div>
+
+<div class="profile-field">
+<label for="designation">Designation</label>
+<input type="text" id="designation" maxlength="100" placeholder="e.g. Director / Super Administrator">
+</div>
+
+<div class="profile-field">
+<label for="photoURL">Profile Photo URL</label>
+<input type="url" id="photoURL" placeholder="https://example.com/photo.jpg">
+</div>
+
+<div class="profile-field">
+<label for="adminRole">Administrator Role</label>
+<input type="text" id="adminRole" disabled>
+</div>
+
+<div class="profile-actions">
+<button type="submit" class="btn" id="saveButton">
+Save Profile
+</button>
+
+<a href="./dashboard.html" class="btn secondary">
+Back to Dashboard
+</a>
+</div>
+
+<p id="profileStatus" class="profile-status muted"></p>
+
+</form>
+
+</section>
+</div>
+
+</main>
+</div>
+
+<script type="module">
+
+import { auth, db } from "../assets/js/firebase.js";
+
+import {
+  onAuthStateChanged,
+  signOut
+} from "https://www.gstatic.com/firebasejs/13.4.0/firebase-auth.js";
+
+import {
+  doc,
+  getDoc,
+  setDoc,
+  serverTimestamp
+} from "https://www.gstatic.com/firebasejs/13.4.0/firebase-firestore.js";
+
+const allowedRoles = [
+  "super_admin",
+  "admin",
+  "recruitment_manager",
+  "exam_controller",
+  "content_manager",
+  "viewer"
+];
+
+const form = document.getElementById("profileForm");
+const statusText = document.getElementById("profileStatus");
+const saveButton = document.getElementById("saveButton");
+
+let currentUser = null;
+let profileLoaded = false;
+
+const fields = {
+  fullName: document.getElementById("fullName"),
+  email: document.getElementById("email"),
+  mobile: document.getElementById("mobile"),
+  designation: document.getElementById("designation"),
+  photoURL: document.getElementById("photoURL"),
+  adminRole: document.getElementById("adminRole")
+};
+
+function showPhoto(url, name) {
+
+  const photo = document.getElementById("profilePhoto");
+  photo.replaceChildren();
+
+  if (url) {
+    const image = document.createElement("img");
+    image.src = url;
+    image.alt = "Admin Profile";
+    image.onerror = () => {
+      photo.textContent = name.trim().charAt(0).toUpperCase() || "A";
+    };
+    photo.appendChild(image);
+  } else {
+    photo.textContent = name.trim().charAt(0).toUpperCase() || "A";
+  }
+}
+
+onAuthStateChanged(auth, async (user) => {
+
+  if (!user) {
+    window.location.replace("../login.html");
+    return;
+  }
+
+  currentUser = user;
+
+  try {
+
+    const adminRef = doc(db, "admins", user.uid);
+    const adminSnap = await getDoc(adminRef);
+
+    if (!adminSnap.exists()) {
+      await signOut(auth);
+      window.location.replace("../login.html");
+      return;
+    }
+
+    const adminData = adminSnap.data();
+
+    if (
+      adminData.status !== "active" ||
+      !allowedRoles.includes(adminData.role)
+    ) {
+      await signOut(auth);
+      window.location.replace("../login.html");
+      return;
+    }
+
+    const profileRef = doc(db, "admin_profiles", user.uid);
+    const profileSnap = await getDoc(profileRef);
+
+    const profileData = profileSnap.exists()
+      ? profileSnap.data()
+      : {};
+
+    fields.fullName.value =
+      profileData.fullName || adminData.fullName || user.displayName || "";
+
+    fields.email.value = user.email || "";
+
+    fields.mobile.value = profileData.mobile || "";
+
+    fields.designation.value = profileData.designation || "";
+
+    fields.photoURL.value = profileData.photoURL || user.photoURL || "";
+
+    fields.adminRole.value =
+      String(adminData.role || "").replaceAll("_", " ");
+
+    showPhoto(fields.photoURL.value, fields.fullName.value);
+
+    profileLoaded = true;
+    document.body.style.display = "";
+
+  } catch (error) {
+
+    console.error("Profile loading error:", error);
+
+    statusText.textContent =
+      "Unable to load profile. Please check your permissions.";
+
+    document.body.style.display = "";
+
+  }
+
+});
+
+fields.photoURL.addEventListener("input", () => {
+  showPhoto(fields.photoURL.value.trim(), fields.fullName.value);
+});
+
+fields.fullName.addEventListener("input", () => {
+  showPhoto(fields.photoURL.value.trim(), fields.fullName.value);
+});
+
+form.addEventListener("submit", async (event) => {
+
+  event.preventDefault();
+
+  if (!currentUser || !profileLoaded) {
+    statusText.textContent = "Profile is not ready. Please reload the page.";
+    return;
+  }
+
+  const fullName = fields.fullName.value.trim();
+  const mobile = fields.mobile.value.trim();
+  const designation = fields.designation.value.trim();
+  const photoURL = fields.photoURL.value.trim();
+
+  if (!fullName) {
+    statusText.textContent = "Please enter your full name.";
+    return;
+  }
+
+  if (photoURL) {
+    try {
+      const parsedURL = new URL(photoURL);
+      if (parsedURL.protocol !== "https:" && parsedURL.protocol !== "http:") {
+        throw new Error("Invalid URL");
+      }
+    } catch {
+      statusText.textContent = "Please enter a valid photo URL.";
+      return;
+    }
+  }
+
+  saveButton.disabled = true;
+  saveButton.textContent = "Saving...";
+  statusText.textContent = "";
+
+  try {
+
+    await setDoc(
+      doc(db, "admin_profiles", currentUser.uid),
+      {
+        userId: currentUser.uid,
+        fullName,
+        mobile,
+        designation,
+        photoURL,
+        updatedAt: serverTimestamp()
+      },
+      { merge: true }
+    );
+
+    statusText.textContent = "Profile saved successfully.";
+
+    showPhoto(photoURL, fullName);
+
+  } catch (error) {
+
+    console.error("Profile save error:", error);
+
+    statusText.textContent =
+      "Unable to save profile. Please check Firestore security rules.";
+
+  } finally {
+
+    saveButton.disabled = false;
+    saveButton.textContent = "Save Profile";
+
+  }
+
+});
+
+document.getElementById("logoutButton").addEventListener("click", async (event) => {
+
+  event.preventDefault();
+
+  try {
+    await signOut(auth);
+    window.location.replace("../login.html");
+  } catch (error) {
+    alert("Logout failed. Please try again.");
+    console.error(error);
+  }
+
+});
+
+</script>
+
+</body>
+</html>
+
