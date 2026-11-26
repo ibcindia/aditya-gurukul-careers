@@ -1,154 +1,215 @@
 
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="description" content="Job Details – Aditya Gurukul Careers">
 <title>Job Details | Aditya Gurukul Careers</title>
 <link rel="stylesheet" href="./assets/css/style.css">
+
+<style>
+.application-message {
+  margin-top: 18px;
+  padding: 14px;
+  border-radius: 8px;
+  display: none;
+  background: #f2f5f8;
+}
+.application-message.success {
+  display: block;
+  color: #176b38;
+  background: #eaf7ee;
+}
+.application-message.error {
+  display: block;
+  color: #a32626;
+  background: #fff0f0;
+}
+.application-message.info {
+  display: block;
+}
+</style>
 </head>
 
 <body>
 
 <div class="topbar">
-<div class="container">
-Education Career & Recruitment Portal
-<span style="float:right">Empowering Educators. Connecting Opportunities.</span>
-</div>
+  <div class="container">
+    Education Career & Recruitment Portal
+    <span style="float:right">Empowering Educators. Connecting Opportunities.</span>
+  </div>
 </div>
 
 <header class="navbar">
-<div class="container navinner">
-<a class="brand" href="./index.html">
-<span class="brandmark">AG</span>
-<span>ADITYA GURUKUL<small>CAREERS</small></span>
-</a>
-<nav class="navlinks">
-<a href="./index.html">Home</a>
-<a href="./about.html">About</a>
-<a href="./jobs.html">Find Jobs</a>
-<a href="./contact.html">Contact</a>
-</nav>
-<div>
-<a class="btn secondary" href="./login.html">Login</a>
-<a class="btn" href="./register.html">Register</a>
-</div>
-</div>
+  <div class="container navinner">
+
+    <a class="brand" href="./index.html">
+      <span class="brandmark">AG</span>
+      <span>ADITYA GURUKUL<small>CAREERS</small></span>
+    </a>
+
+    <nav class="navlinks">
+      <a href="./index.html">Home</a>
+      <a href="./about.html">About</a>
+      <a href="./jobs.html">Find Jobs</a>
+      <a href="./contact.html">Contact</a>
+    </nav>
+
+    <div>
+      <a class="btn secondary" href="./login.html">Login</a>
+      <a class="btn" href="./register.html">Register</a>
+    </div>
+
+  </div>
 </header>
 
 <section class="pagehero">
-<div class="container">
-<div class="breadcrumbs">
-<a href="./index.html">Home</a> /
-<a href="./jobs.html">Find Jobs</a> /
-Details
-</div>
-<h1 id="jobTitle">Loading Job Details...</h1>
-<p class="muted" id="jobMeta"></p>
-</div>
+  <div class="container">
+
+    <div class="breadcrumbs">
+      <a href="./index.html">Home</a> /
+      <a href="./jobs.html">Find Jobs</a> /
+      Details
+    </div>
+
+    <h1 id="jobTitle">Loading Job Details...</h1>
+    <p class="muted" id="jobMeta"></p>
+
+  </div>
 </section>
 
 <section class="section">
-<div class="container">
+  <div class="container">
 
-<div id="loadingMessage">Loading vacancy information...</div>
+    <div id="loadingMessage">
+      Loading vacancy information...
+    </div>
 
-<div id="jobContent" style="display:none;">
+    <div id="jobContent" style="display:none;">
 
-<span class="tag" id="jobDepartment"></span>
+      <span class="tag" id="jobDepartment"></span>
 
-<h2>Role Overview</h2>
-<p id="jobDescription"></p>
+      <h2>Role Overview</h2>
+      <p id="jobDescription"></p>
 
-<h3>Eligibility & Qualification</h3>
-<p id="jobQualification"></p>
+      <h3>Eligibility & Qualification</h3>
+      <p id="jobQualification"></p>
 
-<div id="responsibilitiesSection" style="display:none;">
-<h3>Responsibilities</h3>
-<ul id="jobResponsibilities"></ul>
-</div>
+      <div id="responsibilitiesSection" style="display:none;">
+        <h3>Responsibilities</h3>
+        <ul id="jobResponsibilities"></ul>
+      </div>
 
-<div id="eligibilitySection" style="display:none;">
-<h3>Additional Eligibility</h3>
-<p id="jobEligibility"></p>
-</div>
+      <div id="eligibilitySection" style="display:none;">
+        <h3>Additional Eligibility</h3>
+        <p id="jobEligibility"></p>
+      </div>
 
-<div id="experienceSection" style="display:none;">
-<h3>Experience Required</h3>
-<p id="jobExperience"></p>
-</div>
+      <div id="experienceSection" style="display:none;">
+        <h3>Experience Required</h3>
+        <p id="jobExperience"></p>
+      </div>
 
-<div class="notice">
-Please review the job requirements carefully before applying.
-</div>
+      <div class="notice">
+        Please review the job requirements carefully before applying.
+      </div>
 
-<div style="margin-top:25px;display:flex;gap:12px;flex-wrap:wrap;">
-<button class="btn" id="applyButton" type="button" disabled>
-Loading...
-</button>
-<a class="btn secondary" href="./jobs.html">Back to Jobs</a>
-</div>
+      <div style="margin-top:25px;display:flex;gap:12px;flex-wrap:wrap;">
 
-<p id="applicationMessage" role="status" style="margin-top:15px;"></p>
+        <button class="btn" id="applyButton" type="button" disabled>
+          Loading...
+        </button>
 
-</div>
+        <a class="btn secondary" href="./jobs.html">
+          Back to Jobs
+        </a>
 
-<div id="errorMessage" class="notice" style="display:none;"></div>
+      </div>
 
-</div>
+      <div id="applicationMessage" class="application-message" role="status"></div>
+
+    </div>
+
+    <div id="errorMessage" class="notice" style="display:none;"></div>
+
+  </div>
 </section>
 
 <footer class="footer">
-<div class="container">
-<div class="footergrid">
-<div>
-<h3>ADITYA GURUKUL CAREERS</h3>
-<p>Connecting education professionals with meaningful career opportunities across Maharashtra.</p>
-</div>
-<div>
-<h3>Explore</h3>
-<a href="./jobs.html">Find Jobs</a>
-<a href="./about.html">About Us</a>
-<a href="./register.html">Candidate Registration</a>
-</div>
-<div>
-<h3>Candidate</h3>
-<a href="./login.html">Login</a>
-<a href="./candidate-dashboard.html">Dashboard</a>
-</div>
-<div>
-<h3>Information</h3>
-<a href="./privacy.html">Privacy Policy</a>
-<a href="./terms.html">Terms</a>
-</div>
-</div>
-<div class="copyright">
-© <span id="year"></span> Aditya Gurukul Careers. All rights reserved.
-</div>
-</div>
+  <div class="container">
+
+    <div class="footergrid">
+
+      <div>
+        <h3>ADITYA GURUKUL CAREERS</h3>
+        <p>Connecting education professionals with meaningful career opportunities across Maharashtra.</p>
+      </div>
+
+      <div>
+        <h3>Explore</h3>
+        <a href="./jobs.html">Find Jobs</a>
+        <a href="./about.html">About Us</a>
+        <a href="./register.html">Candidate Registration</a>
+      </div>
+
+      <div>
+        <h3>Candidate</h3>
+        <a href="./login.html">Login</a>
+        <a href="./candidate-dashboard.html">Dashboard</a>
+        <a href="./profile.html">My Profile</a>
+      </div>
+
+      <div>
+        <h3>Information</h3>
+        <a href="./privacy.html">Privacy Policy</a>
+        <a href="./terms.html">Terms</a>
+        <a href="./admin/index.html">Administrator</a>
+      </div>
+
+    </div>
+
+    <div class="copyright">
+      © <span id="year"></span> Aditya Gurukul Careers. All rights reserved.
+    </div>
+
+  </div>
 </footer>
 
 <script type="module">
-  
-import {
-onAuthStateChanged,
-sonAuthStateChanged(auth,(user)=>{
-  currentUser = user;
-  updateApplyButton();
-  resolveAuthReady(user);
-}
+
+// =====================================
+// FIREBASE IMPORTS
+// =====================================
 
 import {
-doc,
-getDoc,
-collection,
-getDocs,
-query,
-where,
-addDoc,
-serverTimestamp
+  auth,
+  db,
+  googleProvider
+} from "./assets/js/firebase.js";
+
+import {
+  onAuthStateChanged,
+  signInWithPopup,
+  browserLocalPersistence,
+  setPersistence
+} from "https://www.gstatic.com/firebasejs/13.4.0/firebase-auth.js";
+
+import {
+  doc,
+  getDoc,
+  collection,
+  getDocs,
+  query,
+  where,
+  addDoc,
+  serverTimestamp
 } from "https://www.gstatic.com/firebasejs/13.4.0/firebase-firestore.js";
+
+
+// =====================================
+// PAGE ELEMENTS
+// =====================================
 
 const loadingMessage = document.getElementById("loadingMessage");
 const jobContent = document.getElementById("jobContent");
@@ -156,268 +217,541 @@ const errorMessage = document.getElementById("errorMessage");
 const applyButton = document.getElementById("applyButton");
 const applicationMessage = document.getElementById("applicationMessage");
 
-document.getElementById("year").textContent = new Date().getFullYear();
+document.getElementById("year").textContent =
+  new Date().getFullYear();
+
+
+// =====================================
+// GLOBAL VARIABLES
+// =====================================
+
+let currentJob = null;
+let currentJobId = null;
+let currentUser = null;
+let applying = false;
 
 let resolveAuthReady;
 
 const authReady = new Promise(resolve => {
   resolveAuthReady = resolve;
 });
-  
-let currentJob = null;
-let currentJobId = null;
-let currentUser = null;
-let applying = false;
 
-function showError(message){
-loadingMessage.style.display = "none";
-jobContent.style.display = "none";
-errorMessage.style.display = "block";
-errorMessage.textContent = message;
-}
 
-function showText(id,value,fallback="Not specified"){
-document.getElementById(id).textContent =
-value ? String(value) : fallback;
-}
+// =====================================
+// MESSAGE FUNCTIONS
+// =====================================
 
-function showOptionalSection(sectionId,elementId,value){
-if(!value) return;
-document.getElementById(sectionId).style.display = "block";
-document.getElementById(elementId).textContent = String(value);
-}
+function showError(message) {
 
-async function loadJobDetails(){
+  loadingMessage.style.display = "none";
+  jobContent.style.display = "none";
 
-try{
-
-const params = new URLSearchParams(window.location.search);
-currentJobId = params.get("id");
-
-if(!currentJobId){
-showError("Job ID is missing. Please return to the Find Jobs page.");
-return;
-}
-
-const jobRef = doc(db,"jobs",currentJobId);
-const jobSnapshot = await getDoc(jobRef);
-
-if(!jobSnapshot.exists()){
-showError("This job opportunity could not be found.");
-return;
-}
-
-const job = jobSnapshot.data();
-
-if(job.status !== "published"){
-showError("This job opportunity is currently not available.");
-return;
-}
-
-currentJob = job;
-
-showText("jobTitle",job.jobTitle,"Untitled Position");
-
-showText("jobMeta",[
-job.department,
-job.location,
-job.employmentType
-].filter(Boolean).join(" · "),"Job Information");
-
-showText("jobDepartment",job.department,"General");
-showText("jobDescription",job.description);
-showText("jobQualification",job.qualification);
-
-if(Array.isArray(job.responsibilities) && job.responsibilities.length){
-
-const list = document.getElementById("jobResponsibilities");
-
-job.responsibilities.forEach(item=>{
-const li = document.createElement("li");
-li.textContent = String(item);
-list.appendChild(li);
-});
-
-document.getElementById("responsibilitiesSection").style.display = "block";
-}
-
-showOptionalSection("eligibilitySection","jobEligibility",job.eligibility);
-showOptionalSection("experienceSection","jobExperience",job.experience);
-
-document.title = (job.jobTitle || "Job Details") + " | Aditya Gurukul Careers";
-
-loadingMessage.style.display = "none";
-jobContent.style.display = "block";
-
-updateApplyButton();
-
-}catch(error){
-
-console.error("Job details error:",error);
-showError("Unable to load job details. Please try again later.");
-
-}
-}
-
-function updateApplyButton(){
-
-if(!currentJob) return;
-
-applyButton.disabled = false;
-
-if(!currentUser){
-applyButton.textContent = "Login with Google & Apply";
-}else{
-applyButton.textContent = "Apply Now";
-}
+  errorMessage.style.display = "block";
+  errorMessage.textContent = message;
 
 }
 
-onAuthStateChanged(auth,(user)=>{
-currentUser = user;
-updateApplyButton();
-});
+function showMessage(message, type = "info") {
 
-async function submitApplication(){
-
-if(applying || !currentJob || !currentJobId) return;
-
-applying = true;
-applyButton.disabled = true;
-applicationMessage.textContent = "";
-
-try{
-
-await authReady;
-
-let user = auth.currentUser;
-
-// Google sign-in if candidate is not logged in
-if(!user){
-
-applicationMessage.textContent = "Please sign in with your Google Account.";
-
-await setPersistence(auth,browserLocalPersistence);
-
-const result = await signInWithPopup(auth,googleProvider);
-user = result.user;
-currentUser = user;
+  applicationMessage.textContent = message;
+  applicationMessage.className = "application-message " + type;
 
 }
 
-// Load candidate profile
-const profileRef = doc(db,"candidates",user.uid);
-const profileSnapshot = await getDoc(profileRef);
+function showText(id, value, fallback = "Not specified") {
 
-if(!profileSnapshot.exists()){
+  document.getElementById(id).textContent =
+    value ? String(value) : fallback;
 
-applicationMessage.textContent =
-"Please complete your Candidate Registration before applying.";
-
-setTimeout(()=>{
-window.location.href = "./register.html";
-},1800);
-
-return;
 }
 
-const candidate = profileSnapshot.data();
+function showOptionalSection(sectionId, elementId, value) {
 
-// Essential profile validation
-if(!candidate.fullName || !candidate.mobile || !candidate.qualification){
+  if (!value) return;
 
-applicationMessage.textContent =
-"Please complete your Name, Mobile Number and Qualification in My Profile before applying.";
+  document.getElementById(sectionId).style.display = "block";
 
-applyButton.disabled = false;
-return;
+  document.getElementById(elementId).textContent =
+    String(value);
+
 }
 
-// Check existing applications by this candidate
-const existingQuery = query(
-collection(db,"applications"),
-where("userId","==",user.uid)
-);
 
-const existingSnapshot = await getDocs(existingQuery);
+// =====================================
+// AUTH STATE
+// =====================================
 
-const alreadyApplied = existingSnapshot.docs.some(item=>
-item.data().jobId === currentJobId
-);
+onAuthStateChanged(auth, user => {
 
-if(alreadyApplied){
+  currentUser = user;
 
-applicationMessage.textContent =
-"You have already applied for this job.";
+  updateApplyButton();
 
-applyButton.textContent = "Already Applied";
-return;
-}
-
-// Ask for confirmation
-const confirmed = window.confirm(
-"Confirm your application for " +
-(currentJob.jobTitle || "this job") +
-"?\n\nYour candidate profile details will be shared with the recruitment team."
-);
-
-if(!confirmed){
-applicationMessage.textContent = "Application cancelled.";
-applyButton.disabled = false;
-return;
-}
-
-// Save application in Firestore
-await addDoc(collection(db,"applications"),{
-
-userId: user.uid,
-candidateId: user.uid,
-candidateName: candidate.fullName,
-candidateEmail: user.email || candidate.email || "",
-candidateMobile: candidate.mobile || "",
-jobId: currentJobId,
-jobTitle: currentJob.jobTitle || "Job Application",
-department: currentJob.department || "",
-location: currentJob.location || "",
-status: "submitted",
-appliedAt: serverTimestamp(),
-createdAt: serverTimestamp()
+  resolveAuthReady(user);
 
 });
 
-applicationMessage.textContent =
-"Your application has been submitted successfully!";
 
-applyButton.textContent = "Application Submitted";
-applyButton.disabled = true;
+// =====================================
+// APPLY BUTTON
+// =====================================
 
-}catch(error){
+function updateApplyButton() {
 
-console.error("Application submission error:",error);
+  if (!currentJob) return;
 
-if(error.code === "permission-denied"){
-applicationMessage.textContent =
-"Permission denied. Please check Firestore Security Rules.";
-}else if(error.code === "auth/popup-closed-by-user"){
-applicationMessage.textContent =
-"Google sign-in was cancelled. Please try again.";
-}else{
-applicationMessage.textContent =
-"Unable to submit your application. " + error.message;
-}
+  if (applying) return;
 
-applyButton.disabled = false;
-updateApplyButton();
+  applyButton.disabled = false;
 
-}finally{
-applying = false;
-}
+  applyButton.textContent = currentUser
+    ? "Apply Now"
+    : "Login with Google & Apply";
 
 }
 
-applyButton.addEventListener("click",submitApplication);
 
-loadJobDetails();
+// =====================================
+// LOAD JOB DETAILS
+// =====================================
+
+async function loadJobDetails() {
+
+  try {
+
+    const params = new URLSearchParams(window.location.search);
+
+    currentJobId = params.get("id");
+
+    if (!currentJobId) {
+
+      showError(
+        "Job ID is missing. Please return to the Find Jobs page."
+      );
+
+      return;
+    }
+
+    const jobRef = doc(db, "jobs", currentJobId);
+
+    const jobSnapshot = await getDoc(jobRef);
+
+    if (!jobSnapshot.exists()) {
+
+      showError(
+        "This job opportunity could not be found."
+      );
+
+      return;
+    }
+
+    const job = jobSnapshot.data();
+
+    if (job.status !== "published") {
+
+      showError(
+        "This job opportunity is currently not available."
+      );
+
+      return;
+    }
+
+    currentJob = job;
+
+    showText(
+      "jobTitle",
+      job.jobTitle,
+      "Untitled Position"
+    );
+
+    showText(
+      "jobMeta",
+      [
+        job.department,
+        job.location,
+        job.employmentType
+      ].filter(Boolean).join(" · "),
+      "Job Information"
+    );
+
+    showText(
+      "jobDepartment",
+      job.department,
+      "General"
+    );
+
+    showText(
+      "jobDescription",
+      job.description
+    );
+
+    showText(
+      "jobQualification",
+      job.qualification
+    );
+
+
+    // RESPONSIBILITIES
+
+    if (
+      Array.isArray(job.responsibilities) &&
+      job.responsibilities.length
+    ) {
+
+      const list = document.getElementById("jobResponsibilities");
+
+      job.responsibilities.forEach(item => {
+
+        const li = document.createElement("li");
+
+        li.textContent = String(item);
+
+        list.appendChild(li);
+
+      });
+
+      document.getElementById(
+        "responsibilitiesSection"
+      ).style.display = "block";
+
+    }
+
+
+    // OPTIONAL INFORMATION
+
+    showOptionalSection(
+      "eligibilitySection",
+      "jobEligibility",
+      job.eligibility
+    );
+
+    showOptionalSection(
+      "experienceSection",
+      "jobExperience",
+      job.experience
+    );
+
+
+    document.title =
+      (job.jobTitle || "Job Details") +
+      " | Aditya Gurukul Careers";
+
+
+    loadingMessage.style.display = "none";
+
+    jobContent.style.display = "block";
+
+    updateApplyButton();
+
+  } catch (error) {
+
+    console.error("Job details error:", error);
+
+    showError(
+      "Unable to load job details: " + error.message
+    );
+
+  }
+
+}
+
+
+// =====================================
+// APPLICATION SUBMISSION
+// =====================================
+
+async function submitApplication() {
+
+  if (applying || !currentJob || !currentJobId) {
+    return;
+  }
+
+  applying = true;
+
+  applyButton.disabled = true;
+
+  showMessage("Preparing your application...");
+
+
+  try {
+
+    // Wait until Firebase authentication is ready
+
+    await authReady;
+
+    let user = auth.currentUser;
+
+
+    // GOOGLE LOGIN
+
+    if (!user) {
+
+      showMessage(
+        "Please sign in with your Google Account."
+      );
+
+      await setPersistence(
+        auth,
+        browserLocalPersistence
+      );
+
+      const result = await signInWithPopup(
+        auth,
+        googleProvider
+      );
+
+      user = result.user;
+
+      currentUser = user;
+
+    }
+
+
+    // LOAD CANDIDATE PROFILE
+
+    const profileRef = doc(
+      db,
+      "candidates",
+      user.uid
+    );
+
+    const profileSnapshot = await getDoc(profileRef);
+
+
+    if (!profileSnapshot.exists()) {
+
+      showMessage(
+        "Please complete your Candidate Registration before applying.",
+        "error"
+      );
+
+      setTimeout(() => {
+
+        window.location.href = "./register.html";
+
+      }, 1800);
+
+      return;
+
+    }
+
+
+    const candidate = profileSnapshot.data();
+
+
+    // REQUIRED PROFILE VALIDATION
+
+    if (
+      !candidate.fullName ||
+      !candidate.mobile ||
+      !candidate.qualification
+    ) {
+
+      showMessage(
+        "Please complete your Name, Mobile Number and Qualification in My Profile.",
+        "error"
+      );
+
+      applyButton.disabled = false;
+
+      return;
+
+    }
+
+
+    // CHECK DUPLICATE APPLICATION
+
+    const existingQuery = query(
+      collection(db, "applications"),
+      where("userId", "==", user.uid)
+    );
+
+    const existingSnapshot = await getDocs(
+      existingQuery
+    );
+
+    const alreadyApplied = existingSnapshot.docs.some(item =>
+
+      item.data().jobId === currentJobId
+
+    );
+
+
+    if (alreadyApplied) {
+
+      showMessage(
+        "You have already applied for this job.",
+        "error"
+      );
+
+      applyButton.textContent = "Already Applied";
+
+      return;
+
+    }
+
+
+    // CONFIRM APPLICATION
+
+    const confirmed = window.confirm(
+
+      "Confirm your application for " +
+      (currentJob.jobTitle || "this job") +
+
+      "?\n\nYour candidate profile details will be shared with the recruitment team."
+
+    );
+
+
+    if (!confirmed) {
+
+      showMessage(
+        "Application cancelled.",
+        "info"
+      );
+
+      applyButton.disabled = false;
+
+      return;
+
+    }
+
+
+    // SAVE APPLICATION TO FIRESTORE
+
+    await addDoc(
+      collection(db, "applications"),
+      {
+
+        userId: user.uid,
+
+        candidateId: user.uid,
+
+        candidateName: candidate.fullName,
+
+        candidateEmail:
+          user.email || candidate.email || "",
+
+        candidateMobile:
+          candidate.mobile || "",
+
+        jobId: currentJobId,
+
+        jobTitle:
+          currentJob.jobTitle || "Job Application",
+
+        department:
+          currentJob.department || "",
+
+        location:
+          currentJob.location || "",
+
+        status: "submitted",
+
+        appliedAt: serverTimestamp(),
+
+        createdAt: serverTimestamp()
+
+      }
+    );
+
+
+    // SUCCESS
+
+    showMessage(
+      "Your application has been submitted successfully!",
+      "success"
+    );
+
+    applyButton.textContent = "Application Submitted";
+
+    applyButton.disabled = true;
+
+
+  } catch (error) {
+
+    console.error(
+      "Application submission error:",
+      error
+    );
+
+
+    if (error.code === "permission-denied") {
+
+      showMessage(
+        "Permission denied. Please check Firestore Security Rules.",
+        "error"
+      );
+
+    } else if (
+      error.code === "auth/popup-closed-by-user"
+    ) {
+
+      showMessage(
+        "Google sign-in was cancelled. Please try again.",
+        "error"
+      );
+
+    } else {
+
+      showMessage(
+        "Unable to submit your application: " + error.message,
+        "error"
+      );
+
+    }
+
+    applyButton.disabled = false;
+
+    updateApplyButton();
+
+
+  } finally {
+
+    applying = false;
+
+  }
+
+}
+
+
+// =====================================
+// BUTTON EVENT
+// =====================================
+
+applyButton.addEventListener(
+  "click",
+  submitApplication
+);
+
+
+// =====================================
+// INITIALIZE PAGE
+// =====================================
+
+async function initializePage() {
+
+  try {
+
+    await setPersistence(
+      auth,
+      browserLocalPersistence
+    );
+
+  } catch (error) {
+
+    console.error(
+      "Authentication persistence error:",
+      error
+    );
+
+  }
+
+  await loadJobDetails();
+
+}
+
+initializePage();
 
 </script>
 
