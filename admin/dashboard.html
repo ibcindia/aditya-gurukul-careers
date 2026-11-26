@@ -46,6 +46,7 @@
   justify-content:center;
   font-weight:700;
   overflow:hidden;
+  flex-shrink:0;
 }
 
 .admin-avatar img {
@@ -135,18 +136,18 @@
 
 <aside class="sidebar">
 
-<a class="brand" href="../admin/dashboard.html">
+<a class="brand" href="./dashboard.html">
 <span class="brandmark">AG</span>
 <span>ADITYA GURUKUL
 <small style="color:#b6c7d3">ADMIN PORTAL</small>
 </span>
 </a>
 
-<a class="side-link active" href="../admin/dashboard.html">Dashboard</a>
-<a class="side-link" href="../admin/candidates.html">Candidates</a>
-<a class="side-link" href="../admin/jobs.html">Jobs</a>
-<a class="side-link" href="../admin/applications.html">Applications</a>
-<a class="side-link" href="../admin/settings.html">Settings</a>
+<a class="side-link active" href="./dashboard.html">Dashboard</a>
+<a class="side-link" href="./candidates.html">Candidates</a>
+<a class="side-link" href="./jobs.html">Jobs</a>
+<a class="side-link" href="./applications.html">Applications</a>
+<a class="side-link" href="./settings.html">Settings</a>
 <a class="side-link" href="../index.html">← View website</a>
 
 </aside>
@@ -182,9 +183,9 @@ aria-expanded="false">
 <small id="adminMenuRole"></small>
 </div>
 
-<div class="admin-menu-link" style="font-weight:700;color:#173b35">
+<a class="admin-menu-link" href="./profile.html">
 My Profile
-</div>
+</a>
 
 <a class="admin-menu-link" href="./settings.html">
 Settings
@@ -307,7 +308,7 @@ document.addEventListener("click", (event) => {
 
 });
 
-// Collection count
+// Dashboard statistics
 async function getCollectionCount(collectionName, conditions = []) {
 
   const collectionRef = collection(db, collectionName);
@@ -322,7 +323,6 @@ async function getCollectionCount(collectionName, conditions = []) {
 
 }
 
-// Dashboard statistics
 async function loadDashboardStats() {
 
   try {
@@ -379,7 +379,7 @@ async function loadDashboardStats() {
 
 }
 
-// Admin verification
+// Admin verification and profile loading
 onAuthStateChanged(auth, async (user) => {
 
   if (!user) {
@@ -411,12 +411,40 @@ onAuthStateChanged(auth, async (user) => {
 
     }
 
+    // Load saved admin profile
+    let profileData = {};
+
+    try {
+
+      const profileSnap = await getDoc(
+        doc(db, "admin_profiles", user.uid)
+      );
+
+      if (profileSnap.exists()) {
+        profileData = profileSnap.data();
+      }
+
+    } catch (profileError) {
+
+      console.error("Admin profile loading:", profileError);
+
+    }
+
     const adminName =
-      adminData.fullName || user.displayName || "Administrator";
+      profileData.fullName ||
+      adminData.fullName ||
+      user.displayName ||
+      "Administrator";
+
+    const photoURL =
+      profileData.photoURL ||
+      user.photoURL ||
+      "";
 
     welcome.textContent = "Welcome, " + adminName;
 
-    document.getElementById("adminMenuName").textContent = adminName;
+    document.getElementById("adminMenuName").textContent =
+      adminName;
 
     document.getElementById("adminMenuEmail").textContent =
       user.email || "";
@@ -426,18 +454,24 @@ onAuthStateChanged(auth, async (user) => {
 
     const avatar = document.getElementById("adminAvatar");
 
-    if (user.photoURL) {
+    if (photoURL) {
 
       const image = document.createElement("img");
-      image.src = user.photoURL;
+      image.src = photoURL;
       image.alt = "Admin Profile";
+
+      image.onerror = () => {
+        avatar.textContent =
+          adminName.trim().charAt(0).toUpperCase() || "A";
+      };
 
       avatar.textContent = "";
       avatar.appendChild(image);
 
     } else {
 
-      avatar.textContent = adminName.trim().charAt(0).toUpperCase();
+      avatar.textContent =
+        adminName.trim().charAt(0).toUpperCase() || "A";
 
     }
 
