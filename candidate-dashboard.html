@@ -19,9 +19,46 @@
 .status-pill{display:inline-block;padding:5px 10px;border-radius:20px;background:#edf2f7;font-size:12px}
 .dashboard-message{padding:16px;background:#f4f6f9;border-radius:8px}
 #dashboardContent{display:none}
+
+.resume-panel{
+  background:#fff;
+  border:1px solid #e7eaf0;
+  border-radius:14px;
+  padding:25px;
+  margin:25px 0;
+}
+
+.resume-panel h2{
+  color:#173b35;
+  margin-top:0;
+}
+
+.resume-actions{
+  display:flex;
+  flex-wrap:wrap;
+  gap:12px;
+  margin-top:18px;
+}
+
+.resume-status{
+  display:inline-block;
+  padding:7px 12px;
+  background:#fff4df;
+  color:#875b08;
+  border-radius:20px;
+  font-size:13px;
+  font-weight:600;
+}
+
+.resume-description{
+  color:#64748b;
+  line-height:1.7;
+}
+
 @media(max-width:600px){
   .data-table{font-size:12px}
   .data-table th,.data-table td{padding:8px}
+  .resume-panel{padding:18px}
 }
 </style>
 </head>
@@ -50,7 +87,6 @@ Education Career & Recruitment Portal
 <a href="./contact.html">Contact</a>
 </nav>
 
-<!-- USER ACCOUNT MENU -->
 <div id="accountArea">
 <a class="btn secondary" href="./login.html">Login</a>
 <a class="btn" href="./register.html">Register</a>
@@ -110,6 +146,45 @@ Loading your dashboard...
 </div>
 
 </div>
+
+<!-- TEACHING RESUME SECTION -->
+
+<section class="resume-panel">
+
+<div class="kicker">Professional Career Profile</div>
+
+<h2>My Teaching Resume / Biodata</h2>
+
+<p class="resume-description">
+Create your professional resume for opportunities in the education sector.
+Select your professional category and complete a category-specific resume
+covering your education, qualifications, work experience, skills and job preferences.
+</p>
+
+<div style="margin:15px 0">
+<span class="resume-status" id="resumeStatus">
+Resume Not Created
+</span>
+</div>
+
+<div class="resume-actions">
+
+<a class="btn" href="./teaching-resume.html">
+Create My Teaching Resume
+</a>
+
+<a class="btn secondary" href="./teaching-resume.html">
+View / Edit My Resume
+</a>
+
+</div>
+
+<p class="muted" style="font-size:13px;margin-top:18px">
+Your resume will be submitted to the Aditya Gurukul Careers recruitment
+team for review. Creating a professional profile does not guarantee employment.
+</p>
+
+</section>
 
 <div class="dashboard-section">
 <div class="card">
@@ -177,6 +252,7 @@ Loading jobs...
 <h3>Candidate</h3>
 <a href="./profile.html">My Profile</a>
 <a href="./candidate-dashboard.html">Dashboard</a>
+<a href="./teaching-resume.html">My Teaching Resume</a>
 </div>
 
 <div>
@@ -201,8 +277,7 @@ Loading jobs...
 import { auth, db } from "./assets/js/firebase.js";
 
 import {
- onAuthStateChanged,
- signOut
+ onAuthStateChanged
 } from "https://www.gstatic.com/firebasejs/13.4.0/firebase-auth.js";
 
 import {
@@ -214,11 +289,9 @@ import {
  where
 } from "https://www.gstatic.com/firebasejs/13.4.0/firebase-firestore.js";
 
-
 const loadingMessage = document.getElementById("loadingMessage");
 const errorMessage = document.getElementById("errorMessage");
 const dashboardContent = document.getElementById("dashboardContent");
-
 
 function showError(message){
 
@@ -228,7 +301,6 @@ function showError(message){
  errorMessage.textContent = message;
 
 }
-
 
 function safeDate(value){
 
@@ -241,7 +313,6 @@ function safeDate(value){
  return "—";
 
 }
-
 
 function calculateCompletion(profile){
 
@@ -265,7 +336,6 @@ function calculateCompletion(profile){
  return Math.round((completed / fields.length) * 100);
 
 }
-
 
 // AUTHENTICATION
 
@@ -298,14 +368,12 @@ onAuthStateChanged(auth, async (user) => {
   document.getElementById("candidateName").textContent =
    profile.fullName || user.displayName || "Candidate";
 
-
   // PROFILE COMPLETION
 
   const completion = calculateCompletion(profile);
 
   document.getElementById("profileCompletion").textContent =
    completion + "%";
-
 
   // PROFILE SUMMARY
 
@@ -315,7 +383,6 @@ onAuthStateChanged(auth, async (user) => {
    (profile.department || "Department not selected") +
    " | " +
    (profile.location || "Location not added");
-
 
   // PUBLISHED JOBS
 
@@ -378,7 +445,6 @@ onAuthStateChanged(auth, async (user) => {
 
   }
 
-
   // CANDIDATE APPLICATIONS
 
   const applicationsQuery = query(
@@ -391,7 +457,6 @@ onAuthStateChanged(auth, async (user) => {
   document.getElementById("totalApplications").textContent =
    applicationsSnap.size;
 
-
   // SHORTLISTED APPLICATIONS
 
   const shortlisted = applicationsSnap.docs.filter(item =>
@@ -400,7 +465,6 @@ onAuthStateChanged(auth, async (user) => {
 
   document.getElementById("shortlistedApplications").textContent =
    shortlisted;
-
 
   // APPLICATION TABLE
 
@@ -412,7 +476,6 @@ onAuthStateChanged(auth, async (user) => {
 
   const applicationsMessage =
    document.getElementById("applicationsMessage");
-
 
   if(applicationsSnap.empty){
 
@@ -433,7 +496,6 @@ onAuthStateChanged(auth, async (user) => {
 
    });
 
-
    applications.forEach(applicationDoc => {
 
     const application = applicationDoc.data();
@@ -445,12 +507,10 @@ onAuthStateChanged(auth, async (user) => {
     jobCell.textContent =
      application.jobTitle || "Job Application";
 
-
     const dateCell = document.createElement("td");
 
     dateCell.textContent =
      safeDate(application.appliedAt);
-
 
     const statusCell = document.createElement("td");
 
@@ -471,12 +531,10 @@ onAuthStateChanged(auth, async (user) => {
 
   }
 
-
   // SHOW DASHBOARD
 
   loadingMessage.style.display = "none";
   dashboardContent.style.display = "block";
-
 
  }catch(error){
 
@@ -493,7 +551,6 @@ onAuthStateChanged(auth, async (user) => {
 
 </script>
 
-<!-- FIREBASE USER ACCOUNT MENU -->
 <script type="module" src="./assets/js/account-menu.js"></script>
 
 </body>
