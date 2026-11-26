@@ -130,13 +130,14 @@ Loading...
 </footer>
 
 <script type="module">
-
-import { auth, db, googleProvider } from "./assets/js/firebase.js";
-
+  
 import {
 onAuthStateChanged,
-signInWithPopup
-} from "https://www.gstatic.com/firebasejs/13.4.0/firebase-auth.js";
+sonAuthStateChanged(auth,(user)=>{
+  currentUser = user;
+  updateApplyButton();
+  resolveAuthReady(user);
+}
 
 import {
 doc,
@@ -157,6 +158,12 @@ const applicationMessage = document.getElementById("applicationMessage");
 
 document.getElementById("year").textContent = new Date().getFullYear();
 
+let resolveAuthReady;
+
+const authReady = new Promise(resolve => {
+  resolveAuthReady = resolve;
+});
+  
 let currentJob = null;
 let currentJobId = null;
 let currentUser = null;
