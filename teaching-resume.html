@@ -1,1 +1,752 @@
 
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Teaching Resume | Aditya Gurukul Careers</title>
+<link rel="stylesheet" href="./assets/css/style.css">
+
+<style>
+.resume-wrap{max-width:1050px;margin:35px auto;padding:20px}
+.resume-card{background:#fff;border:1px solid #e5e7eb;border-radius:14px;padding:28px;margin-bottom:22px;box-shadow:0 4px 18px rgba(0,0,0,.04)}
+.resume-card h2{font-size:21px;margin:0 0 20px;color:#183153}
+.resume-heading{text-align:center;margin-bottom:25px}
+.resume-heading h1{color:#183153;margin-bottom:8px}
+.resume-heading p{color:#64748b}
+.form-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:17px}
+.form-group{display:flex;flex-direction:column;gap:7px}
+.form-group.full{grid-column:1/-1}
+.form-group label{font-weight:600;font-size:14px;color:#334155}
+.form-group input,.form-group select,.form-group textarea{
+ width:100%;padding:12px;border:1px solid #cbd5e1;border-radius:8px;
+ font:inherit;background:#fff;box-sizing:border-box
+}
+.form-group textarea{min-height:90px;resize:vertical}
+.form-group input:focus,.form-group select:focus,.form-group textarea:focus{
+ outline:2px solid #bfdbfe;border-color:#2563eb
+}
+.required{color:#dc2626}
+.section-note{font-size:13px;color:#64748b;margin-top:-12px;margin-bottom:18px}
+.resume-actions{display:flex;gap:12px;flex-wrap:wrap;margin-top:20px}
+.resume-btn{border:0;border-radius:8px;padding:13px 22px;font-weight:700;cursor:pointer}
+.resume-primary{background:#183153;color:#fff}
+.resume-secondary{background:#e2e8f0;color:#183153}
+.resume-status{padding:13px;border-radius:8px;background:#eff6ff;color:#1e40af;margin:15px 0;display:none}
+.photo-preview{width:115px;height:135px;object-fit:cover;border:1px solid #cbd5e1;border-radius:8px;display:none;margin-top:10px}
+#specialFields{display:none}
+#message{white-space:pre-wrap}
+@media(max-width:650px){
+ .resume-wrap{padding:12px;margin:15px auto}
+ .resume-card{padding:18px}
+ .form-grid{grid-template-columns:1fr}
+ .form-group.full{grid-column:auto}
+}
+</style>
+</head>
+
+<body>
+
+<div class="resume-wrap">
+
+ <div class="resume-heading">
+  <h1>My Teaching Resume / Biodata</h1>
+  <p>ADITYA GURUKUL CAREERS – Education Career & Recruitment Portal</p>
+  <p>Empowering Educators. Connecting Opportunities.</p>
+ </div>
+
+ <div id="message" class="resume-status"></div>
+
+ <form id="resumeForm">
+
+  <div class="resume-card">
+   <h2>1. Personal Information</h2>
+
+   <div class="form-grid">
+
+    <div class="form-group">
+     <label>Full Name <span class="required">*</span></label>
+     <input type="text" id="fullName" required maxlength="120">
+    </div>
+
+    <div class="form-group">
+     <label>Date of Birth <span class="required">*</span></label>
+     <input type="date" id="dob" required>
+    </div>
+
+    <div class="form-group">
+     <label>Mobile Number <span class="required">*</span></label>
+     <input type="tel" id="mobile" required maxlength="15">
+    </div>
+
+    <div class="form-group">
+     <label>Email Address <span class="required">*</span></label>
+     <input type="email" id="email" required maxlength="150">
+    </div>
+
+    <div class="form-group">
+     <label>Gender</label>
+     <select id="gender">
+      <option value="">Select</option>
+      <option>Male</option>
+      <option>Female</option>
+      <option>Other</option>
+      <option>Prefer not to say</option>
+     </select>
+    </div>
+
+    <div class="form-group">
+     <label>Marital Status</label>
+     <select id="maritalStatus">
+      <option value="">Select</option>
+      <option>Single</option>
+      <option>Married</option>
+      <option>Other</option>
+     </select>
+    </div>
+
+    <div class="form-group full">
+     <label>Full Residential Address <span class="required">*</span></label>
+     <textarea id="address" required maxlength="1000"></textarea>
+    </div>
+
+    <div class="form-group">
+     <label>City</label>
+     <input type="text" id="city">
+    </div>
+
+    <div class="form-group">
+     <label>District</label>
+     <input type="text" id="district">
+    </div>
+
+    <div class="form-group">
+     <label>State</label>
+     <input type="text" id="state">
+    </div>
+
+    <div class="form-group">
+     <label>PIN Code</label>
+     <input type="text" id="pincode" maxlength="10">
+    </div>
+
+    <div class="form-group full">
+     <label>Passport-size Photograph <span class="required">*</span></label>
+     <input type="file" id="photo" accept="image/jpeg,image/png,image/webp">
+     <small>JPG, PNG किंवा WEBP. कमाल आकार 2 MB.</small>
+     <img id="photoPreview" class="photo-preview" alt="Photo preview">
+     <small id="existingPhoto"></small>
+    </div>
+
+   </div>
+  </div>
+
+  <div class="resume-card">
+   <h2>2. Career Category & Position</h2>
+
+   <div class="form-grid">
+
+    <div class="form-group">
+     <label>Career Category <span class="required">*</span></label>
+     <select id="category" required>
+      <option value="">Select Category</option>
+      <option value="Teaching Administration">Teaching Administration</option>
+      <option value="Teaching Staff">Teaching Staff</option>
+      <option value="Non-Teaching Staff">Non-Teaching Staff</option>
+     </select>
+    </div>
+
+    <div class="form-group">
+     <label>Position / Post <span class="required">*</span></label>
+     <select id="post" required disabled>
+      <option value="">First select category</option>
+     </select>
+    </div>
+
+    <div class="form-group">
+     <label>Total Work Experience</label>
+     <select id="experience">
+      <option value="">Select</option>
+      <option>Fresher</option>
+      <option>Below 1 Year</option>
+      <option>1–3 Years</option>
+      <option>3–5 Years</option>
+      <option>5–10 Years</option>
+      <option>10–15 Years</option>
+      <option>15+ Years</option>
+     </select>
+    </div>
+
+    <div class="form-group">
+     <label>Current Employment Status</label>
+     <select id="employment">
+      <option value="">Select</option>
+      <option>Currently Employed</option>
+      <option>Not Employed</option>
+      <option>Self Employed</option>
+      <option>Freelancer</option>
+     </select>
+    </div>
+
+   </div>
+  </div>
+
+  <div class="resume-card">
+   <h2>3. Educational Qualifications</h2>
+   <p class="section-note">आपली शैक्षणिक माहिती एका क्रमाने लिहा. उदाहरण: Graduation – University – Year – Percentage.</p>
+
+   <div class="form-grid">
+    <div class="form-group full">
+     <label>Highest Educational Qualification <span class="required">*</span></label>
+     <input id="qualification" required placeholder="e.g. M.A., M.Sc., B.Com., Ph.D.">
+    </div>
+
+    <div class="form-group">
+     <label>College / Institution</label>
+     <input id="institution">
+    </div>
+
+    <div class="form-group">
+     <label>University / Board</label>
+     <input id="university">
+    </div>
+
+    <div class="form-group">
+     <label>Passing Year</label>
+     <input type="number" id="passingYear" min="1950" max="2100">
+    </div>
+
+    <div class="form-group">
+     <label>Percentage / CGPA</label>
+     <input id="marks">
+    </div>
+
+    <div class="form-group full">
+     <label>Other Educational Qualifications</label>
+     <textarea id="otherQualifications" placeholder="Additional degrees, diplomas, certificates..."></textarea>
+    </div>
+
+    <div class="form-group full">
+     <label>Professional Qualification</label>
+     <input id="professionalQualification" placeholder="B.Ed., D.Ed., M.Ed., D.T.Ed., NET, SET, CTET, TET etc.">
+    </div>
+   </div>
+  </div>
+
+  <div class="resume-card">
+   <h2>4. Category-specific Information</h2>
+
+   <div id="specialFields">
+
+    <div id="adminFields" style="display:none">
+     <div class="form-grid">
+      <div class="form-group full">
+       <label>Leadership / Administrative Experience</label>
+       <textarea id="leadershipExperience" placeholder="Describe your leadership and school administration experience"></textarea>
+      </div>
+      <div class="form-group">
+       <label>Team Size Managed</label>
+       <input id="teamSize">
+      </div>
+      <div class="form-group">
+       <label>School Administration Experience</label>
+       <input id="schoolAdminExperience">
+      </div>
+      <div class="form-group full">
+       <label>Administrative Skills</label>
+       <textarea id="adminSkills" placeholder="Academic planning, staff management, school operations, compliance etc."></textarea>
+      </div>
+     </div>
+    </div>
+
+    <div id="teacherFields" style="display:none">
+     <div class="form-grid">
+      <div class="form-group">
+       <label>Teaching Subjects</label>
+       <input id="subjects" placeholder="English, Mathematics, Science etc.">
+      </div>
+      <div class="form-group">
+       <label>Classes / Standards</label>
+       <input id="classes" placeholder="Pre-primary, 1–5, 6–10, 11–12 etc.">
+      </div>
+      <div class="form-group full">
+       <label>Teaching Methodology / Specialisation</label>
+       <textarea id="teachingMethodology"></textarea>
+      </div>
+     </div>
+    </div>
+
+    <div id="nonTeachingFields" style="display:none">
+     <div class="form-grid">
+      <div class="form-group">
+       <label>Technical / Professional Skills</label>
+       <input id="technicalSkills" placeholder="Computer, Accounts, IT, Laboratory etc.">
+      </div>
+      <div class="form-group">
+       <label>Software Knowledge</label>
+       <input id="softwareSkills" placeholder="MS Office, Tally, ERP etc.">
+      </div>
+      <div class="form-group full">
+       <label>Job-related Responsibilities / Expertise</label>
+       <textarea id="jobExpertise"></textarea>
+      </div>
+     </div>
+    </div>
+
+   </div>
+
+   <div class="form-group">
+    <label>Languages Known</label>
+    <input id="languages" placeholder="Marathi, Hindi, English etc.">
+   </div>
+  </div>
+
+  <div class="resume-card">
+   <h2>5. Professional Experience</h2>
+
+   <div class="form-grid">
+    <div class="form-group">
+     <label>Previous Institution / Organisation</label>
+     <input id="previousInstitution">
+    </div>
+
+    <div class="form-group">
+     <label>Previous Designation</label>
+     <input id="previousDesignation">
+    </div>
+
+    <div class="form-group">
+     <label>Experience Duration</label>
+     <input id="experienceDuration" placeholder="e.g. 3 years">
+    </div>
+
+    <div class="form-group">
+     <label>Last Drawn Monthly Salary (₹)</label>
+     <input type="number" id="lastSalary" min="0">
+    </div>
+
+    <div class="form-group full">
+     <label>Roles & Responsibilities</label>
+     <textarea id="responsibilities"></textarea>
+    </div>
+   </div>
+  </div>
+
+  <div class="resume-card">
+   <h2>6. Job Preferences</h2>
+
+   <div class="form-grid">
+    <div class="form-group">
+     <label>Preferred School Type</label>
+     <select id="schoolType">
+      <option value="">Select</option>
+      <option>Pre-Primary School</option>
+      <option>Primary School</option>
+      <option>Secondary School</option>
+      <option>Higher Secondary School</option>
+      <option>International School</option>
+      <option>CBSE School</option>
+      <option>ICSE School</option>
+      <option>State Board School</option>
+      <option>College / Educational Institution</option>
+      <option>Any</option>
+     </select>
+    </div>
+
+    <div class="form-group">
+     <label>Preferred Work Location</label>
+     <input id="preferredLocation" placeholder="City / District / State">
+    </div>
+
+    <div class="form-group">
+     <label>Expected Monthly Salary (₹)</label>
+     <input type="number" id="expectedSalary" min="0">
+    </div>
+
+    <div class="form-group">
+     <label>Joining Availability</label>
+     <select id="joining">
+      <option value="">Select</option>
+      <option>Immediately</option>
+      <option>Within 15 Days</option>
+      <option>Within 30 Days</option>
+      <option>After 30 Days</option>
+     </select>
+    </div>
+   </div>
+  </div>
+
+  <div class="resume-card">
+   <h2>7. Documents</h2>
+
+   <div class="form-grid">
+    <div class="form-group full">
+     <label>Upload Resume / CV (PDF)</label>
+     <input type="file" id="resumeFile" accept=".pdf">
+     <small>PDF format, maximum 5 MB.</small>
+     <small id="existingResume"></small>
+    </div>
+
+    <div class="form-group full">
+     <label>Upload Educational / Experience Certificates</label>
+     <input type="file" id="certificates" accept=".pdf,.jpg,.jpeg,.png" multiple>
+     <small>PDF, JPG किंवा PNG. प्रत्येक फाइल कमाल 5 MB. एकावेळी जास्तीत जास्त 5 फाइल्स.</small>
+     <small id="existingDocuments"></small>
+    </div>
+   </div>
+  </div>
+
+  <div class="resume-card">
+   <h2>8. Declaration</h2>
+
+   <div class="form-group">
+    <label>
+     <input type="checkbox" id="declaration" required>
+     I hereby declare that the information provided above is true and correct to the best of my knowledge. I understand that the information may be verified during the recruitment process.
+     <span class="required">*</span>
+    </label>
+   </div>
+
+   <div class="resume-actions">
+    <button type="submit" class="resume-btn resume-primary" id="submitBtn">Submit My Resume</button>
+    <a href="./candidate-dashboard.html" class="resume-btn resume-secondary" style="text-decoration:none">Back to Dashboard</a>
+   </div>
+  </div>
+
+ </form>
+</div>
+
+<script type="module">
+import { auth } from "./assets/js/firebase.js";
+import { supabase } from "./assets/js/supabase.js";
+import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/13.4.0/firebase-auth.js";
+
+const $ = id => document.getElementById(id);
+
+let currentUser = null;
+let savedResume = null;
+
+const posts = {
+ "Teaching Administration": [
+  "Principal","Vice Principal","Headmaster","Headmistress",
+  "Academic Coordinator","Academic Supervisor","Education Officer",
+  "School Administrator","Academic Director","Examination Controller"
+ ],
+ "Teaching Staff": [
+  "Pre-Primary Teacher","Nursery Teacher","Primary Teacher (PRT)",
+  "Upper Primary Teacher","Trained Graduate Teacher (TGT)",
+  "Post Graduate Teacher (PGT)","Secondary Teacher",
+  "Higher Secondary Teacher","Special Educator","Sports Teacher",
+  "Art Teacher","Music Teacher","Computer Teacher","Language Teacher"
+ ],
+ "Non-Teaching Staff": [
+  "Accountant","Senior Accountant","Clerk","Office Assistant",
+  "Receptionist","Librarian","Assistant Librarian","Lab Assistant",
+  "IT Staff","Computer Operator","Counsellor","Nurse",
+  "Transport Manager","Transport Staff","Security Supervisor",
+  "Security Guard","Housekeeping Supervisor","Housekeeping Staff"
+ ]
+};
+
+function showMessage(message, error=false) {
+ const box = $("message");
+ box.style.display = "block";
+ box.style.background = error ? "#fef2f2" : "#eff6ff";
+ box.style.color = error ? "#991b1b" : "#1e40af";
+ box.textContent = message;
+ window.scrollTo({top:0,behavior:"smooth"});
+}
+
+function hideMessage() {
+ $("message").style.display = "none";
+}
+
+$("category").addEventListener("change", () => {
+ const category = $("category").value;
+ const post = $("post");
+
+ post.innerHTML = '<option value="">Select Position</option>';
+ post.disabled = !category;
+
+ if (category && posts[category]) {
+  posts[category].forEach(item => {
+   const option = document.createElement("option");
+   option.value = item;
+   option.textContent = item;
+   post.appendChild(option);
+  });
+ }
+
+ $("specialFields").style.display = category ? "block" : "none";
+ $("adminFields").style.display =
+  category === "Teaching Administration" ? "block" : "none";
+ $("teacherFields").style.display =
+  category === "Teaching Staff" ? "block" : "none";
+ $("nonTeachingFields").style.display =
+  category === "Non-Teaching Staff" ? "block" : "none";
+});
+
+$("photo").addEventListener("change", () => {
+ const file = $("photo").files[0];
+ const preview = $("photoPreview");
+
+ if (!file) return;
+
+ if (!["image/jpeg","image/png","image/webp"].includes(file.type) ||
+     file.size > 2 * 1024 * 1024) {
+  $("photo").value = "";
+  preview.style.display = "none";
+  showMessage("फोटो JPG, PNG किंवा WEBP असावा आणि 2 MB पेक्षा मोठा नसावा.",true);
+  return;
+ }
+
+ preview.src = URL.createObjectURL(file);
+ preview.style.display = "block";
+ hideMessage();
+});
+
+function getFormData() {
+ const ids = [
+  "dob","gender","maritalStatus","address","city","district","state",
+  "pincode","experience","employment","qualification","institution",
+  "university","passingYear","marks","otherQualifications",
+  "professionalQualification","leadershipExperience","teamSize",
+  "schoolAdminExperience","adminSkills","subjects","classes",
+  "teachingMethodology","technicalSkills","softwareSkills","jobExpertise",
+  "languages","previousInstitution","previousDesignation",
+  "experienceDuration","lastSalary","responsibilities","schoolType",
+  "preferredLocation","expectedSalary","joining"
+ ];
+
+ const data = {};
+ ids.forEach(id => data[id] = $(id).value.trim());
+ return data;
+}
+
+function setFormData(data) {
+ Object.entries(data || {}).forEach(([id,value]) => {
+  const field = $(id);
+  if (field && value !== null && value !== undefined) {
+   field.value = value;
+  }
+ });
+}
+
+async function uploadFile(file, folder, allowedTypes, maxSize) {
+ if (!file) return null;
+
+ if (!allowedTypes.includes(file.type)) {
+  throw new Error("अवैध फाइल प्रकार: " + file.name);
+ }
+
+ if (file.size > maxSize) {
+  throw new Error("फाइलचा आकार मर्यादेपेक्षा जास्त आहे: " + file.name);
+ }
+
+ const safeName = file.name.replace(/[^a-zA-Z0-9._-]/g,"_");
+ const path = `${currentUser.uid}/${folder}/${Date.now()}-${crypto.randomUUID()}-${safeName}`;
+
+ const { error } = await supabase.storage
+  .from("teaching-resumes")
+  .upload(path,file,{upsert:false,contentType:file.type});
+
+ if (error) throw error;
+ return path;
+}
+
+async function loadResume() {
+ const { data, error } = await supabase
+  .from("teaching_resumes")
+  .select("*")
+  .eq("user_id",currentUser.uid)
+  .maybeSingle();
+
+ if (error) throw error;
+
+ if (!data) return;
+
+ savedResume = data;
+
+ $("fullName").value = data.full_name || "";
+ $("email").value = data.email || "";
+ $("mobile").value = data.mobile || "";
+ $("category").value = data.category || "";
+
+ $("category").dispatchEvent(new Event("change"));
+
+ if (data.desired_post) $("post").value = data.desired_post;
+
+ setFormData(data.resume_data);
+
+ if (data.photo_path) {
+  $("existingPhoto").textContent = "आधीचा फोटो अपलोड केलेला आहे. नवीन फोटो निवडल्यास तो बदलला जाईल.";
+ }
+
+ if (data.document_paths?.resume) {
+  $("existingResume").textContent = "आधीचा Resume अपलोड केलेला आहे. नवीन PDF निवडल्यास तो बदलला जाईल.";
+ }
+
+ if (data.document_paths?.certificates?.length) {
+  $("existingDocuments").textContent =
+   "आधीची प्रमाणपत्रे: " + data.document_paths.certificates.length + " फाइल्स";
+ }
+
+ showMessage("आपला आधीचा Resume लोड झाला आहे. आवश्यक बदल करून पुन्हा Submit करू शकता.");
+}
+
+onAuthStateChanged(auth, async user => {
+ if (!user) {
+  window.location.href = "./login.html";
+  return;
+ }
+
+ currentUser = user;
+
+ $("email").value = user.email || "";
+
+ try {
+  await loadResume();
+ } catch (error) {
+  console.error(error);
+  showMessage("Resume लोड करताना अडचण आली: " + error.message,true);
+ }
+});
+
+$("resumeForm").addEventListener("submit", async event => {
+ event.preventDefault();
+ hideMessage();
+
+ if (!currentUser) {
+  showMessage("कृपया आधी Login करा.",true);
+  return;
+ }
+
+ if (!$("declaration").checked) {
+  showMessage("कृपया Declaration स्वीकारा.",true);
+  return;
+ }
+
+ if (!$("category").value || !$("post").value) {
+  showMessage("कृपया Career Category आणि Position निवडा.",true);
+  return;
+ }
+
+ if (!savedResume && !$("photo").files[0]) {
+  showMessage("कृपया आपला Passport-size Photograph अपलोड करा.",true);
+  return;
+ }
+
+ const resumeFile = $("resumeFile").files[0];
+ const certificateFiles = Array.from($("certificates").files);
+
+ if (resumeFile && (resumeFile.type !== "application/pdf" ||
+                    resumeFile.size > 5 * 1024 * 1024)) {
+  showMessage("Resume PDF स्वरूपात आणि 5 MB पेक्षा कमी असावा.",true);
+  return;
+ }
+
+ if (certificateFiles.length > 5) {
+  showMessage("जास्तीत जास्त 5 प्रमाणपत्र फाइल्स अपलोड करा.",true);
+  return;
+ }
+
+ if (certificateFiles.some(file =>
+  !["application/pdf","image/jpeg","image/png"].includes(file.type) ||
+  file.size > 5 * 1024 * 1024
+ )) {
+  showMessage("प्रत्येक प्रमाणपत्र PDF/JPG/PNG आणि 5 MB पेक्षा कमी असावे.",true);
+  return;
+ }
+
+ const button = $("submitBtn");
+ button.disabled = true;
+ button.textContent = "Submitting...";
+
+ try {
+  const tokenResult = await currentUser.getIdTokenResult(true);
+
+  if (tokenResult.claims.role !== "authenticated") {
+   throw new Error(
+    "आपल्या खात्याची सुरक्षित Upload Permission अद्याप सक्रिय नाही. कृपया Admin कडून Account Permission Update करून घ्या."
+   );
+  }
+
+  let photoPath = savedResume?.photo_path || null;
+  let resumePath = savedResume?.document_paths?.resume || null;
+  let certificatePaths = savedResume?.document_paths?.certificates || [];
+
+  if ($("photo").files[0]) {
+   photoPath = await uploadFile(
+    $("photo").files[0],
+    "photo",
+    ["image/jpeg","image/png","image/webp"],
+    2 * 1024 * 1024
+   );
+  }
+
+  if (resumeFile) {
+   resumePath = await uploadFile(
+    resumeFile,
+    "resume",
+    ["application/pdf"],
+    5 * 1024 * 1024
+   );
+  }
+
+  if (certificateFiles.length) {
+   const newPaths = [];
+
+   for (const file of certificateFiles) {
+    const path = await uploadFile(
+     file,
+     "certificates",
+     ["application/pdf","image/jpeg","image/png"],
+     5 * 1024 * 1024
+    );
+    newPaths.push(path);
+   }
+
+   certificatePaths = [...certificatePaths,...newPaths];
+  }
+
+  const payload = {
+   user_id: currentUser.uid,
+   full_name: $("fullName").value.trim(),
+   email: currentUser.email || $("email").value.trim(),
+   mobile: $("mobile").value.trim(),
+   category: $("category").value,
+   desired_post: $("post").value,
+   resume_data: getFormData(),
+   photo_path: photoPath,
+   document_paths: {
+    resume: resumePath,
+    certificates: certificatePaths
+   },
+   status: "Submitted",
+   updated_at: new Date().toISOString()
+  };
+
+  const { error } = await supabase
+   .from("teaching_resumes")
+   .upsert(payload,{onConflict:"user_id"});
+
+  if (error) throw error;
+
+  savedResume = payload;
+
+  showMessage(
+   "आपला Teaching Resume यशस्वीरीत्या Submit झाला आहे. आपला Submission Status: Submitted."
+  );
+
+ } catch (error) {
+  console.error(error);
+  showMessage("Submit करताना अडचण आली: " + error.message,true);
+ } finally {
+  button.disabled = false;
+  button.textContent = "Submit My Resume";
+ }
+});
+</script>
+
+</body>
+</html>
