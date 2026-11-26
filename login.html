@@ -20,6 +20,7 @@
 
 <header class="navbar">
   <div class="container navinner">
+
     <a class="brand" href="./index.html">
       <span class="brandmark">AG</span>
       <span>ADITYA GURUKUL<small>CAREERS</small></span>
@@ -32,10 +33,11 @@
       <a href="./contact.html">Contact</a>
     </nav>
 
-    <div>
+    <div id="accountArea">
       <a class="btn secondary" href="./login.html">Login</a>
       <a class="btn" href="./register.html">Register</a>
     </div>
+
   </div>
 </header>
 
@@ -50,15 +52,25 @@
 <div class="formwrap">
 
   <h2>Welcome Back</h2>
-  <p class="muted">Sign in securely using your Google Account.</p>
 
-  <button type="button" class="btn" id="googleLogin" style="width:100%">
+  <p class="muted">
+    Sign in securely using your Google Account.
+  </p>
+
+  <button
+    type="button"
+    class="btn"
+    id="googleLogin"
+    style="width:100%">
     Continue with Google
   </button>
 
   <p id="loginMessage" class="muted" role="status" aria-live="polite"></p>
 
-  <p>New candidate? <a href="./register.html">Create a profile</a></p>
+  <p>
+    New candidate?
+    <a href="./register.html">Create a profile</a>
+  </p>
 
   <div class="notice">
     Google authentication is provided through Firebase.
@@ -68,11 +80,15 @@
 
 <footer class="footer">
   <div class="container">
+
     <div class="footergrid">
 
       <div>
         <h3>ADITYA GURUKUL CAREERS</h3>
-        <p>Connecting education professionals with meaningful career opportunities across Maharashtra.</p>
+        <p>
+          Connecting education professionals with meaningful career
+          opportunities across Maharashtra.
+        </p>
       </div>
 
       <div>
@@ -86,6 +102,7 @@
         <h3>Candidate</h3>
         <a href="./login.html">Login</a>
         <a href="./candidate-dashboard.html">Dashboard</a>
+        <a href="./profile.html">My Profile</a>
       </div>
 
       <div>
@@ -100,17 +117,20 @@
     <div class="copyright">
       © <span data-year></span> Aditya Gurukul Careers. All rights reserved.
     </div>
+
   </div>
 </footer>
 
 <script src="./assets/js/main.js"></script>
 
 <script type="module">
+
 import { auth, db, googleProvider } from "./assets/js/firebase.js";
 
 import {
-  await setPersistence(auth,browserLocalPersistence);
-  signInWithPopup
+  signInWithPopup,
+  setPersistence,
+  browserLocalPersistence
 } from "https://www.gstatic.com/firebasejs/13.4.0/firebase-auth.js";
 
 import {
@@ -120,20 +140,30 @@ import {
   serverTimestamp
 } from "https://www.gstatic.com/firebasejs/13.4.0/firebase-firestore.js";
 
+
 const loginButton = document.getElementById("googleLogin");
 const message = document.getElementById("loginMessage");
 
-loginButton.addEventListener("click", async () => {
+
+loginButton.addEventListener("click", async function () {
 
   loginButton.disabled = true;
-  message.textContent = "Signing in... Please wait.";
+  message.textContent = "Connecting to Google. Please wait...";
 
   try {
 
+    // Keep the user signed in across pages and browser visits
+    await setPersistence(auth, browserLocalPersistence);
+
+    // Google Sign In
     const result = await signInWithPopup(auth, googleProvider);
+
     const user = result.user;
 
-    // Check whether this user is an authorized administrator
+    message.textContent = "Verifying your account...";
+
+
+    // Check Admin Account
     const adminRef = doc(db, "admins", user.uid);
     const adminSnap = await getDoc(adminRef);
 
@@ -154,18 +184,24 @@ loginButton.addEventListener("click", async () => {
         adminData.status === "active" &&
         allowedRoles.includes(adminData.role)
       ) {
-        window.location.href = "./admin/dashboard.html";
+
+        message.textContent = "Admin login successful. Redirecting...";
+
+        window.location.replace("./admin/dashboard.html");
         return;
+
       }
 
-      throw new Error("Administrator access is inactive or unauthorized.");
+      throw new Error("Administrator account is inactive or unauthorized.");
     }
 
-    // Create a basic candidate user record if it does not exist
+
+    // Candidate Account
     const userRef = doc(db, "users", user.uid);
     const userSnap = await getDoc(userRef);
 
     if (!userSnap.exists()) {
+
       await setDoc(userRef, {
         fullName: user.displayName || "",
         email: user.email || "",
@@ -173,24 +209,42 @@ loginButton.addEventListener("click", async () => {
         status: "active",
         createdAt: serverTimestamp()
       });
+
     }
 
-    window.location.href = "./candidate-dashboard.html";
+    message.textContent = "Login successful. Opening your dashboard...";
+
+    window.location.replace("./candidate-dashboard.html");
+
 
   } catch (error) {
 
     console.error("Login Error:", error);
 
     if (error.code === "auth/popup-closed-by-user") {
+
       message.textContent = "Google sign-in was cancelled. Please try again.";
+
+    } else if (error.code === "auth/popup-blocked") {
+
+      message.textContent = "Your browser blocked the Google popup. Please allow popups and try again.";
+
+    } else if (error.code === "auth/unauthorized-domain") {
+
+      message.textContent = "This website domain is not authorized in Firebase Authentication.";
+
     } else {
+
       message.textContent = error.message || "Login failed. Please try again.";
+
     }
 
     loginButton.disabled = false;
+
   }
 
 });
+
 </script>
 
 </body>
