@@ -56,7 +56,8 @@
       <a href="./contact.html">Contact</a>
     </nav>
 
-    <div>
+    <!-- USER ACCOUNT MENU -->
+    <div id="accountArea">
       <a class="btn secondary" href="./login.html">Login</a>
       <a class="btn" href="./register.html">Register</a>
     </div>
@@ -178,10 +179,6 @@
 
 <script type="module">
 
-// =====================================
-// FIREBASE IMPORTS
-// =====================================
-
 import {
   auth,
   db,
@@ -207,9 +204,7 @@ import {
 } from "https://www.gstatic.com/firebasejs/13.4.0/firebase-firestore.js";
 
 
-// =====================================
 // PAGE ELEMENTS
-// =====================================
 
 const loadingMessage = document.getElementById("loadingMessage");
 const jobContent = document.getElementById("jobContent");
@@ -221,9 +216,7 @@ document.getElementById("year").textContent =
   new Date().getFullYear();
 
 
-// =====================================
 // GLOBAL VARIABLES
-// =====================================
 
 let currentJob = null;
 let currentJobId = null;
@@ -237,9 +230,7 @@ const authReady = new Promise(resolve => {
 });
 
 
-// =====================================
 // MESSAGE FUNCTIONS
-// =====================================
 
 function showError(message) {
 
@@ -277,9 +268,7 @@ function showOptionalSection(sectionId, elementId, value) {
 }
 
 
-// =====================================
 // AUTH STATE
-// =====================================
 
 onAuthStateChanged(auth, user => {
 
@@ -292,15 +281,11 @@ onAuthStateChanged(auth, user => {
 });
 
 
-// =====================================
 // APPLY BUTTON
-// =====================================
 
 function updateApplyButton() {
 
-  if (!currentJob) return;
-
-  if (applying) return;
+  if (!currentJob || applying) return;
 
   applyButton.disabled = false;
 
@@ -311,9 +296,7 @@ function updateApplyButton() {
 }
 
 
-// =====================================
 // LOAD JOB DETAILS
-// =====================================
 
 async function loadJobDetails() {
 
@@ -324,45 +307,28 @@ async function loadJobDetails() {
     currentJobId = params.get("id");
 
     if (!currentJobId) {
-
-      showError(
-        "Job ID is missing. Please return to the Find Jobs page."
-      );
-
+      showError("Job ID is missing. Please return to the Find Jobs page.");
       return;
     }
 
     const jobRef = doc(db, "jobs", currentJobId);
-
     const jobSnapshot = await getDoc(jobRef);
 
     if (!jobSnapshot.exists()) {
-
-      showError(
-        "This job opportunity could not be found."
-      );
-
+      showError("This job opportunity could not be found.");
       return;
     }
 
     const job = jobSnapshot.data();
 
     if (job.status !== "published") {
-
-      showError(
-        "This job opportunity is currently not available."
-      );
-
+      showError("This job opportunity is currently not available.");
       return;
     }
 
     currentJob = job;
 
-    showText(
-      "jobTitle",
-      job.jobTitle,
-      "Untitled Position"
-    );
+    showText("jobTitle", job.jobTitle, "Untitled Position");
 
     showText(
       "jobMeta",
@@ -374,21 +340,9 @@ async function loadJobDetails() {
       "Job Information"
     );
 
-    showText(
-      "jobDepartment",
-      job.department,
-      "General"
-    );
-
-    showText(
-      "jobDescription",
-      job.description
-    );
-
-    showText(
-      "jobQualification",
-      job.qualification
-    );
+    showText("jobDepartment", job.department, "General");
+    showText("jobDescription", job.description);
+    showText("jobQualification", job.qualification);
 
 
     // RESPONSIBILITIES
@@ -403,9 +357,7 @@ async function loadJobDetails() {
       job.responsibilities.forEach(item => {
 
         const li = document.createElement("li");
-
         li.textContent = String(item);
-
         list.appendChild(li);
 
       });
@@ -436,9 +388,7 @@ async function loadJobDetails() {
       (job.jobTitle || "Job Details") +
       " | Aditya Gurukul Careers";
 
-
     loadingMessage.style.display = "none";
-
     jobContent.style.display = "block";
 
     updateApplyButton();
@@ -447,24 +397,18 @@ async function loadJobDetails() {
 
     console.error("Job details error:", error);
 
-    showError(
-      "Unable to load job details: " + error.message
-    );
+    showError("Unable to load job details: " + error.message);
 
   }
 
 }
 
 
-// =====================================
 // APPLICATION SUBMISSION
-// =====================================
 
 async function submitApplication() {
 
-  if (applying || !currentJob || !currentJobId) {
-    return;
-  }
+  if (applying || !currentJob || !currentJobId) return;
 
   applying = true;
 
@@ -472,10 +416,7 @@ async function submitApplication() {
 
   showMessage("Preparing your application...");
 
-
   try {
-
-    // Wait until Firebase authentication is ready
 
     await authReady;
 
@@ -486,9 +427,7 @@ async function submitApplication() {
 
     if (!user) {
 
-      showMessage(
-        "Please sign in with your Google Account."
-      );
+      showMessage("Please sign in with your Google Account.");
 
       await setPersistence(
         auth,
@@ -501,7 +440,6 @@ async function submitApplication() {
       );
 
       user = result.user;
-
       currentUser = user;
 
     }
@@ -517,7 +455,6 @@ async function submitApplication() {
 
     const profileSnapshot = await getDoc(profileRef);
 
-
     if (!profileSnapshot.exists()) {
 
       showMessage(
@@ -526,15 +463,12 @@ async function submitApplication() {
       );
 
       setTimeout(() => {
-
         window.location.href = "./register.html";
-
       }, 1800);
 
       return;
 
     }
-
 
     const candidate = profileSnapshot.data();
 
@@ -566,16 +500,11 @@ async function submitApplication() {
       where("userId", "==", user.uid)
     );
 
-    const existingSnapshot = await getDocs(
-      existingQuery
-    );
+    const existingSnapshot = await getDocs(existingQuery);
 
     const alreadyApplied = existingSnapshot.docs.some(item =>
-
       item.data().jobId === currentJobId
-
     );
-
 
     if (alreadyApplied) {
 
@@ -594,22 +523,14 @@ async function submitApplication() {
     // CONFIRM APPLICATION
 
     const confirmed = window.confirm(
-
       "Confirm your application for " +
       (currentJob.jobTitle || "this job") +
-
       "?\n\nYour candidate profile details will be shared with the recruitment team."
-
     );
-
 
     if (!confirmed) {
 
-      showMessage(
-        "Application cancelled.",
-        "info"
-      );
-
+      showMessage("Application cancelled.", "info");
       applyButton.disabled = false;
 
       return;
@@ -624,9 +545,7 @@ async function submitApplication() {
       {
 
         userId: user.uid,
-
         candidateId: user.uid,
-
         candidateName: candidate.fullName,
 
         candidateEmail:
@@ -649,7 +568,6 @@ async function submitApplication() {
         status: "submitted",
 
         appliedAt: serverTimestamp(),
-
         createdAt: serverTimestamp()
 
       }
@@ -664,17 +582,11 @@ async function submitApplication() {
     );
 
     applyButton.textContent = "Application Submitted";
-
     applyButton.disabled = true;
-
 
   } catch (error) {
 
-    console.error(
-      "Application submission error:",
-      error
-    );
-
+    console.error("Application submission error:", error);
 
     if (error.code === "permission-denied") {
 
@@ -702,9 +614,7 @@ async function submitApplication() {
     }
 
     applyButton.disabled = false;
-
     updateApplyButton();
-
 
   } finally {
 
@@ -715,9 +625,7 @@ async function submitApplication() {
 }
 
 
-// =====================================
 // BUTTON EVENT
-// =====================================
 
 applyButton.addEventListener(
   "click",
@@ -725,9 +633,7 @@ applyButton.addEventListener(
 );
 
 
-// =====================================
 // INITIALIZE PAGE
-// =====================================
 
 async function initializePage() {
 
@@ -756,6 +662,9 @@ initializePage();
 </script>
 
 <script src="./assets/js/main.js"></script>
+
+<!-- USER ACCOUNT MENU -->
+<script type="module" src="./assets/js/account-menu.js"></script>
 
 </body>
 </html>
