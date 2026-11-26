@@ -12,265 +12,399 @@
 <body>
 
 <div class="topbar">
-  <div class="container">
-    Education Career & Recruitment Portal
-    <span style="float:right">Empowering Educators. Connecting Opportunities.</span>
-  </div>
+<div class="container">
+Education Career & Recruitment Portal
+<span style="float:right">Empowering Educators. Connecting Opportunities.</span>
+</div>
 </div>
 
 <header class="navbar">
-  <div class="container navinner">
-    <a class="brand" href="./index.html">
-      <span class="brandmark">AG</span>
-      <span>ADITYA GURUKUL<small>CAREERS</small></span>
-    </a>
-
-    <nav class="navlinks">
-      <a href="./index.html">Home</a>
-      <a href="./about.html">About</a>
-      <a href="./jobs.html">Find Jobs</a>
-      <a href="./contact.html">Contact</a>
-    </nav>
-
-    <div>
-      <a class="btn secondary" href="./login.html">Login</a>
-      <a class="btn" href="./register.html">Register</a>
-    </div>
-  </div>
+<div class="container navinner">
+<a class="brand" href="./index.html">
+<span class="brandmark">AG</span>
+<span>ADITYA GURUKUL<small>CAREERS</small></span>
+</a>
+<nav class="navlinks">
+<a href="./index.html">Home</a>
+<a href="./about.html">About</a>
+<a href="./jobs.html">Find Jobs</a>
+<a href="./contact.html">Contact</a>
+</nav>
+<div>
+<a class="btn secondary" href="./login.html">Login</a>
+<a class="btn" href="./register.html">Register</a>
+</div>
+</div>
 </header>
 
 <section class="pagehero">
-  <div class="container">
-    <div class="breadcrumbs">
-      <a href="./index.html">Home</a> /
-      <a href="./jobs.html">Find Jobs</a> /
-      Details
-    </div>
-
-    <h1 id="jobTitle">Loading Job Details...</h1>
-    <p class="muted" id="jobMeta"></p>
-  </div>
+<div class="container">
+<div class="breadcrumbs">
+<a href="./index.html">Home</a> /
+<a href="./jobs.html">Find Jobs</a> /
+Details
+</div>
+<h1 id="jobTitle">Loading Job Details...</h1>
+<p class="muted" id="jobMeta"></p>
+</div>
 </section>
 
 <section class="section">
-  <div class="container">
+<div class="container">
 
-    <div id="loadingMessage">Loading vacancy information...</div>
+<div id="loadingMessage">Loading vacancy information...</div>
 
-    <div id="jobContent" style="display:none;">
+<div id="jobContent" style="display:none;">
 
-      <span class="tag" id="jobDepartment"></span>
+<span class="tag" id="jobDepartment"></span>
 
-      <h2>Role Overview</h2>
-      <p id="jobDescription"></p>
+<h2>Role Overview</h2>
+<p id="jobDescription"></p>
 
-      <h3>Eligibility & Qualification</h3>
-      <p id="jobQualification"></p>
+<h3>Eligibility & Qualification</h3>
+<p id="jobQualification"></p>
 
-      <div id="responsibilitiesSection" style="display:none;">
-        <h3>Responsibilities</h3>
-        <ul id="jobResponsibilities"></ul>
-      </div>
+<div id="responsibilitiesSection" style="display:none;">
+<h3>Responsibilities</h3>
+<ul id="jobResponsibilities"></ul>
+</div>
 
-      <div id="eligibilitySection" style="display:none;">
-        <h3>Additional Eligibility</h3>
-        <p id="jobEligibility"></p>
-      </div>
+<div id="eligibilitySection" style="display:none;">
+<h3>Additional Eligibility</h3>
+<p id="jobEligibility"></p>
+</div>
 
-      <div id="experienceSection" style="display:none;">
-        <h3>Experience Required</h3>
-        <p id="jobExperience"></p>
-      </div>
+<div id="experienceSection" style="display:none;">
+<h3>Experience Required</h3>
+<p id="jobExperience"></p>
+</div>
 
-      <div class="notice">
-        Please review the job requirements carefully before applying.
-      </div>
+<div class="notice">
+Please review the job requirements carefully before applying.
+</div>
 
-      <div style="margin-top:25px;">
-        <a class="btn" id="applyButton" href="./login.html">
-          Apply Now
-        </a>
+<div style="margin-top:25px;display:flex;gap:12px;flex-wrap:wrap;">
+<button class="btn" id="applyButton" type="button" disabled>
+Loading...
+</button>
+<a class="btn secondary" href="./jobs.html">Back to Jobs</a>
+</div>
 
-        <a class="btn secondary" href="./jobs.html">
-          Back to Jobs
-        </a>
-      </div>
+<p id="applicationMessage" role="status" style="margin-top:15px;"></p>
 
-    </div>
+</div>
 
-    <div id="errorMessage" class="notice" style="display:none;"></div>
+<div id="errorMessage" class="notice" style="display:none;"></div>
 
-  </div>
+</div>
 </section>
 
 <footer class="footer">
-  <div class="container">
-
-    <div class="footergrid">
-
-      <div>
-        <h3>ADITYA GURUKUL CAREERS</h3>
-        <p>Connecting education professionals with meaningful career opportunities across Maharashtra.</p>
-      </div>
-
-      <div>
-        <h3>Explore</h3>
-        <a href="./jobs.html">Find Jobs</a>
-        <a href="./about.html">About Us</a>
-        <a href="./register.html">Candidate Registration</a>
-      </div>
-
-      <div>
-        <h3>Candidate</h3>
-        <a href="./login.html">Login</a>
-        <a href="./candidate-dashboard.html">Dashboard</a>
-      </div>
-
-      <div>
-        <h3>Information</h3>
-        <a href="./privacy.html">Privacy Policy</a>
-        <a href="./terms.html">Terms</a>
-        <a href="./admin/index.html">Administrator</a>
-      </div>
-
-    </div>
-
-    <div class="copyright">
-      © <span id="year"></span> Aditya Gurukul Careers. All rights reserved.
-    </div>
-
-  </div>
+<div class="container">
+<div class="footergrid">
+<div>
+<h3>ADITYA GURUKUL CAREERS</h3>
+<p>Connecting education professionals with meaningful career opportunities across Maharashtra.</p>
+</div>
+<div>
+<h3>Explore</h3>
+<a href="./jobs.html">Find Jobs</a>
+<a href="./about.html">About Us</a>
+<a href="./register.html">Candidate Registration</a>
+</div>
+<div>
+<h3>Candidate</h3>
+<a href="./login.html">Login</a>
+<a href="./candidate-dashboard.html">Dashboard</a>
+</div>
+<div>
+<h3>Information</h3>
+<a href="./privacy.html">Privacy Policy</a>
+<a href="./terms.html">Terms</a>
+</div>
+</div>
+<div class="copyright">
+© <span id="year"></span> Aditya Gurukul Careers. All rights reserved.
+</div>
+</div>
 </footer>
 
 <script type="module">
 
-import { db } from "./assets/js/firebase.js";
+import { auth, db, googleProvider } from "./assets/js/firebase.js";
 
 import {
-  doc,
-  getDoc
+onAuthStateChanged,
+signInWithPopup
+} from "https://www.gstatic.com/firebasejs/13.4.0/firebase-auth.js";
+
+import {
+doc,
+getDoc,
+collection,
+getDocs,
+query,
+where,
+addDoc,
+serverTimestamp
 } from "https://www.gstatic.com/firebasejs/13.4.0/firebase-firestore.js";
 
 const loadingMessage = document.getElementById("loadingMessage");
 const jobContent = document.getElementById("jobContent");
 const errorMessage = document.getElementById("errorMessage");
+const applyButton = document.getElementById("applyButton");
+const applicationMessage = document.getElementById("applicationMessage");
 
 document.getElementById("year").textContent = new Date().getFullYear();
 
-function showError(message) {
-  loadingMessage.style.display = "none";
-  jobContent.style.display = "none";
-  errorMessage.style.display = "block";
-  errorMessage.textContent = message;
+let currentJob = null;
+let currentJobId = null;
+let currentUser = null;
+let applying = false;
+
+function showError(message){
+loadingMessage.style.display = "none";
+jobContent.style.display = "none";
+errorMessage.style.display = "block";
+errorMessage.textContent = message;
 }
 
-function showText(id, value, fallback = "Not specified") {
-  document.getElementById(id).textContent =
-    value ? String(value) : fallback;
+function showText(id,value,fallback="Not specified"){
+document.getElementById(id).textContent =
+value ? String(value) : fallback;
 }
 
-function showOptionalSection(sectionId, elementId, value) {
-  if (!value) return;
-
-  document.getElementById(sectionId).style.display = "block";
-  document.getElementById(elementId).textContent = String(value);
+function showOptionalSection(sectionId,elementId,value){
+if(!value) return;
+document.getElementById(sectionId).style.display = "block";
+document.getElementById(elementId).textContent = String(value);
 }
 
-async function loadJobDetails() {
+async function loadJobDetails(){
 
-  try {
+try{
 
-    const params = new URLSearchParams(window.location.search);
-    const jobId = params.get("id");
+const params = new URLSearchParams(window.location.search);
+currentJobId = params.get("id");
 
-    if (!jobId) {
-      showError("Job ID is missing. Please return to the Find Jobs page.");
-      return;
-    }
-
-    const jobRef = doc(db, "jobs", jobId);
-    const jobSnapshot = await getDoc(jobRef);
-
-    if (!jobSnapshot.exists()) {
-      showError("This job opportunity could not be found.");
-      return;
-    }
-
-    const job = jobSnapshot.data();
-
-    if (job.status !== "published") {
-      showError("This job opportunity is currently not available.");
-      return;
-    }
-
-    showText("jobTitle", job.jobTitle, "Untitled Position");
-
-    showText(
-      "jobMeta",
-      [
-        job.department,
-        job.location,
-        job.employmentType
-      ].filter(Boolean).join(" · "),
-      "Job Information"
-    );
-
-    showText("jobDepartment", job.department, "General");
-
-    showText(
-      "jobDescription",
-      job.description,
-      "Detailed job description will be announced by the recruitment team."
-    );
-
-    showText(
-      "jobQualification",
-      job.qualification,
-      "Please contact the recruitment team for qualification details."
-    );
-
-    if (Array.isArray(job.responsibilities) && job.responsibilities.length) {
-
-      const list = document.getElementById("jobResponsibilities");
-
-      job.responsibilities.forEach(item => {
-        const li = document.createElement("li");
-        li.textContent = String(item);
-        list.appendChild(li);
-      });
-
-      document.getElementById("responsibilitiesSection").style.display = "block";
-    }
-
-    showOptionalSection(
-      "eligibilitySection",
-      "jobEligibility",
-      job.eligibility
-    );
-
-    showOptionalSection(
-      "experienceSection",
-      "jobExperience",
-      job.experience
-    );
-
-    document.getElementById("applyButton").href =
-      "./login.html?jobId=" + encodeURIComponent(jobId);
-
-    document.title =
-      (job.jobTitle || "Job Details") + " | Aditya Gurukul Careers";
-
-    loadingMessage.style.display = "none";
-    jobContent.style.display = "block";
-
-  } catch (error) {
-
-    console.error("Job details error:", error);
-
-    showError("Unable to load job details. Please try again later.");
-
-  }
+if(!currentJobId){
+showError("Job ID is missing. Please return to the Find Jobs page.");
+return;
 }
+
+const jobRef = doc(db,"jobs",currentJobId);
+const jobSnapshot = await getDoc(jobRef);
+
+if(!jobSnapshot.exists()){
+showError("This job opportunity could not be found.");
+return;
+}
+
+const job = jobSnapshot.data();
+
+if(job.status !== "published"){
+showError("This job opportunity is currently not available.");
+return;
+}
+
+currentJob = job;
+
+showText("jobTitle",job.jobTitle,"Untitled Position");
+
+showText("jobMeta",[
+job.department,
+job.location,
+job.employmentType
+].filter(Boolean).join(" · "),"Job Information");
+
+showText("jobDepartment",job.department,"General");
+showText("jobDescription",job.description);
+showText("jobQualification",job.qualification);
+
+if(Array.isArray(job.responsibilities) && job.responsibilities.length){
+
+const list = document.getElementById("jobResponsibilities");
+
+job.responsibilities.forEach(item=>{
+const li = document.createElement("li");
+li.textContent = String(item);
+list.appendChild(li);
+});
+
+document.getElementById("responsibilitiesSection").style.display = "block";
+}
+
+showOptionalSection("eligibilitySection","jobEligibility",job.eligibility);
+showOptionalSection("experienceSection","jobExperience",job.experience);
+
+document.title = (job.jobTitle || "Job Details") + " | Aditya Gurukul Careers";
+
+loadingMessage.style.display = "none";
+jobContent.style.display = "block";
+
+updateApplyButton();
+
+}catch(error){
+
+console.error("Job details error:",error);
+showError("Unable to load job details. Please try again later.");
+
+}
+}
+
+function updateApplyButton(){
+
+if(!currentJob) return;
+
+applyButton.disabled = false;
+
+if(!currentUser){
+applyButton.textContent = "Login with Google & Apply";
+}else{
+applyButton.textContent = "Apply Now";
+}
+
+}
+
+onAuthStateChanged(auth,(user)=>{
+currentUser = user;
+updateApplyButton();
+});
+
+async function submitApplication(){
+
+if(applying || !currentJob || !currentJobId) return;
+
+applying = true;
+applyButton.disabled = true;
+applicationMessage.textContent = "";
+
+try{
+
+let user = auth.currentUser;
+
+// Google sign-in if candidate is not logged in
+if(!user){
+
+applicationMessage.textContent = "Please sign in with your Google Account.";
+
+const result = await signInWithPopup(auth,googleProvider);
+user = result.user;
+currentUser = user;
+
+}
+
+// Load candidate profile
+const profileRef = doc(db,"candidates",user.uid);
+const profileSnapshot = await getDoc(profileRef);
+
+if(!profileSnapshot.exists()){
+
+applicationMessage.textContent =
+"Please complete your Candidate Registration before applying.";
+
+setTimeout(()=>{
+window.location.href = "./register.html";
+},1800);
+
+return;
+}
+
+const candidate = profileSnapshot.data();
+
+// Essential profile validation
+if(!candidate.fullName || !candidate.mobile || !candidate.qualification){
+
+applicationMessage.textContent =
+"Please complete your Name, Mobile Number and Qualification in My Profile before applying.";
+
+applyButton.disabled = false;
+return;
+}
+
+// Check existing applications by this candidate
+const existingQuery = query(
+collection(db,"applications"),
+where("userId","==",user.uid)
+);
+
+const existingSnapshot = await getDocs(existingQuery);
+
+const alreadyApplied = existingSnapshot.docs.some(item=>
+item.data().jobId === currentJobId
+);
+
+if(alreadyApplied){
+
+applicationMessage.textContent =
+"You have already applied for this job.";
+
+applyButton.textContent = "Already Applied";
+return;
+}
+
+// Ask for confirmation
+const confirmed = window.confirm(
+"Confirm your application for " +
+(currentJob.jobTitle || "this job") +
+"?\n\nYour candidate profile details will be shared with the recruitment team."
+);
+
+if(!confirmed){
+applicationMessage.textContent = "Application cancelled.";
+applyButton.disabled = false;
+return;
+}
+
+// Save application in Firestore
+await addDoc(collection(db,"applications"),{
+
+userId: user.uid,
+candidateId: user.uid,
+candidateName: candidate.fullName,
+candidateEmail: user.email || candidate.email || "",
+candidateMobile: candidate.mobile || "",
+jobId: currentJobId,
+jobTitle: currentJob.jobTitle || "Job Application",
+department: currentJob.department || "",
+location: currentJob.location || "",
+status: "submitted",
+appliedAt: serverTimestamp(),
+createdAt: serverTimestamp()
+
+});
+
+applicationMessage.textContent =
+"Your application has been submitted successfully!";
+
+applyButton.textContent = "Application Submitted";
+applyButton.disabled = true;
+
+}catch(error){
+
+console.error("Application submission error:",error);
+
+if(error.code === "permission-denied"){
+applicationMessage.textContent =
+"Permission denied. Please check Firestore Security Rules.";
+}else if(error.code === "auth/popup-closed-by-user"){
+applicationMessage.textContent =
+"Google sign-in was cancelled. Please try again.";
+}else{
+applicationMessage.textContent =
+"Unable to submit your application. " + error.message;
+}
+
+applyButton.disabled = false;
+updateApplyButton();
+
+}finally{
+applying = false;
+}
+
+}
+
+applyButton.addEventListener("click",submitApplication);
 
 loadJobDetails();
 
