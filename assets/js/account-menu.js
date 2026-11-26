@@ -8,7 +8,18 @@ import {
 
 const accountArea = document.getElementById("accountArea");
 
+function escapeHTML(value) {
+  return String(value).replace(/[&<>"']/g, (char) => ({
+    "&": "&amp;",
+    "<": "&lt;",
+    ">": "&gt;",
+    '"': "&quot;",
+    "'": "&#39;"
+  })[char]);
+}
+
 if (accountArea) {
+
   const style = document.createElement("style");
 
   style.textContent = `
@@ -33,8 +44,8 @@ if (accountArea) {
     }
 
     .account-avatar {
-      width: 34px;
-      height: 34px;
+      width: 36px;
+      height: 36px;
       border-radius: 50%;
       background: #173d35;
       color: #fff;
@@ -43,6 +54,7 @@ if (accountArea) {
       justify-content: center;
       font-weight: 700;
       overflow: hidden;
+      flex-shrink: 0;
     }
 
     .account-avatar img {
@@ -70,11 +82,11 @@ if (accountArea) {
       border-radius: 12px;
       box-shadow: 0 12px 35px rgba(0,0,0,.15);
       padding: 9px;
-      z-index: 9999;
+      z-index: 99999;
     }
 
     .account-dropdown[hidden] {
-      display: none;
+      display: none !important;
     }
 
     .account-info {
@@ -138,100 +150,201 @@ if (accountArea) {
 
   document.head.appendChild(style);
 
+
   function showLoggedOut() {
+
     accountArea.innerHTML = `
-      <a class="btn secondary" href="login.html">Login</a>
-      <a class="btn" href="register.html">Register</a>
+      <a class="btn secondary" href="./login.html">Login</a>
+      <a class="btn" href="./register.html">Register</a>
     `;
+
   }
 
-  function showLoggedIn(user) {
-    const displayName = user.displayName || "Candidate";
-    const email = user.email || "";
-    const initial = displayName.trim().charAt(0).toUpperCase() || "U";
 
-    const avatar = user.photoURL
-      ? `<img src="${user.photoURL}" alt="Profile">`
+  function showLoggedIn(user) {
+
+    const displayName = escapeHTML(
+      user.displayName || "Candidate"
+    );
+
+    const email = escapeHTML(
+      user.email || ""
+    );
+
+    const initial =
+      displayName.trim().charAt(0).toUpperCase() || "U";
+
+    const safePhotoURL =
+      user.photoURL && user.photoURL.startsWith("https://")
+        ? escapeHTML(user.photoURL)
+        : "";
+
+    const avatar = safePhotoURL
+      ? `<img src="${safePhotoURL}" alt="Profile">`
       : initial;
+
 
     accountArea.innerHTML = `
       <div class="account-wrap">
+
         <button
           type="button"
           class="account-user-btn"
           id="accountUserButton"
           aria-expanded="false"
-          aria-label="Open account menu"
-        >
-          <span class="account-avatar">${avatar}</span>
-          <span class="account-user-name">${displayName}</span>
+          aria-label="Open account menu">
+
+          <span class="account-avatar">
+            ${avatar}
+          </span>
+
+          <span class="account-user-name">
+            ${displayName}
+          </span>
+
           <span aria-hidden="true">⌄</span>
+
         </button>
 
-        <div class="account-dropdown" id="accountDropdown" hidden>
+
+        <div
+          class="account-dropdown"
+          id="accountDropdown"
+          hidden>
+
           <div class="account-info">
             <strong>${displayName}</strong>
             <small>${email}</small>
           </div>
 
-          <a href="candidate-dashboard.html">My Dashboard</a>
-          <a href="profile.html">My Profile / Edit Profile</a>
-          <a href="candidate-dashboard.html">My Applications</a>
-          <a href="jobs.html">Find Jobs</a>
+          <a href="./candidate-dashboard.html">
+            My Dashboard
+          </a>
 
-          <button type="button" class="account-logout" id="accountLogout">
+          <a href="./profile.html">
+            My Profile / Edit Profile
+          </a>
+
+          <a href="./candidate-dashboard.html">
+            My Applications
+          </a>
+
+          <a href="./jobs.html">
+            Find Jobs
+          </a>
+
+          <button
+            type="button"
+            class="account-logout"
+            id="accountLogout">
             Logout
           </button>
+
         </div>
+
       </div>
     `;
 
-    const userButton = document.getElementById("accountUserButton");
-    const dropdown = document.getElementById("accountDropdown");
-    const logoutButton = document.getElementById("accountLogout");
+
+    const userButton =
+      document.getElementById("accountUserButton");
+
+    const dropdown =
+      document.getElementById("accountDropdown");
+
+    const logoutButton =
+      document.getElementById("accountLogout");
+
 
     userButton.addEventListener("click", () => {
+
       const isOpening = dropdown.hidden;
+
       dropdown.hidden = !isOpening;
-      userButton.setAttribute("aria-expanded", String(isOpening));
+
+      userButton.setAttribute(
+        "aria-expanded",
+        String(isOpening)
+      );
+
     });
+
 
     document.addEventListener("click", (event) => {
+
       if (!accountArea.contains(event.target)) {
+
         dropdown.hidden = true;
-        userButton.setAttribute("aria-expanded", "false");
+
+        userButton.setAttribute(
+          "aria-expanded",
+          "false"
+        );
+
       }
+
     });
+
 
     document.addEventListener("keydown", (event) => {
+
       if (event.key === "Escape") {
+
         dropdown.hidden = true;
-        userButton.setAttribute("aria-expanded", "false");
+
+        userButton.setAttribute(
+          "aria-expanded",
+          "false"
+        );
+
       }
+
     });
 
+
     logoutButton.addEventListener("click", async () => {
+
       logoutButton.disabled = true;
+
       logoutButton.textContent = "Signing out...";
 
       try {
+
         await signOut(auth);
-        window.location.href = "login.html";
+
+        window.location.replace("./login.html");
+
       } catch (error) {
-        console.error("Logout error:", error);
+
+        console.error("Logout Error:", error);
+
         alert("Logout failed. Please try again.");
+
         logoutButton.disabled = false;
+
         logoutButton.textContent = "Logout";
+
       }
+
     });
+
   }
 
-  onAuthStateChanged(auth, (user) => {
-    if (user) {
-      showLoggedIn(user);
-    } else {
-      showLoggedOut();
-    }
-  });
-}
 
+  // Check Firebase Login Status
+
+  onAuthStateChanged(auth, (user) => {
+
+    if (user) {
+
+      showLoggedIn(user);
+
+    } else {
+
+      showLoggedOut();
+
+    }
+
+  });
+
+}
