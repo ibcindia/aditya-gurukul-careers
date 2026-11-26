@@ -133,7 +133,7 @@
     <div class="form-group full">
      <label>Passport-size Photograph <span class="required">*</span></label>
      <input type="file" id="photo" accept="image/jpeg,image/png,image/webp">
-     <small>JPG, PNG किंवा WEBP. कमाल आकार 2 MB.</small>
+     <small>JPG, PNG or WEBP. Maximum file size: 2 MB.</small>
      <img id="photoPreview" class="photo-preview" alt="Photo preview">
      <small id="existingPhoto"></small>
     </div>
@@ -193,7 +193,7 @@
 
   <div class="resume-card">
    <h2>3. Educational Qualifications</h2>
-   <p class="section-note">आपली शैक्षणिक माहिती एका क्रमाने लिहा. उदाहरण: Graduation – University – Year – Percentage.</p>
+   <p class="section-note">Enter your educational qualifications in sequence. Example: Graduation – University – Year – Percentage.</p>
 
    <div class="form-grid">
     <div class="form-group full">
@@ -390,7 +390,7 @@
     <div class="form-group full">
      <label>Upload Educational / Experience Certificates</label>
      <input type="file" id="certificates" accept=".pdf,.jpg,.jpeg,.png" multiple>
-     <small>PDF, JPG किंवा PNG. प्रत्येक फाइल कमाल 5 MB. एकावेळी जास्तीत जास्त 5 फाइल्स.</small>
+     <small>PDF, JPG or PNG. Maximum 5 MB per file. You can upload up to 5 files at a time.</small>
      <small id="existingDocuments"></small>
     </div>
    </div>
@@ -496,7 +496,7 @@ $("photo").addEventListener("change", () => {
      file.size > 2 * 1024 * 1024) {
   $("photo").value = "";
   preview.style.display = "none";
-  showMessage("फोटो JPG, PNG किंवा WEBP असावा आणि 2 MB पेक्षा मोठा नसावा.",true);
+  showMessage("The photograph must be in JPG, PNG or WEBP format and must not exceed 2 MB.",true);
   return;
  }
 
@@ -536,11 +536,11 @@ async function uploadFile(file, folder, allowedTypes, maxSize) {
  if (!file) return null;
 
  if (!allowedTypes.includes(file.type)) {
-  throw new Error("अवैध फाइल प्रकार: " + file.name);
+  throw new Error("Invalid file type: " + file.name);
  }
 
  if (file.size > maxSize) {
-  throw new Error("फाइलचा आकार मर्यादेपेक्षा जास्त आहे: " + file.name);
+  throw new Error("File size exceeds the permitted limit: " + file.name);
  }
 
  const safeName = file.name.replace(/[^a-zA-Z0-9._-]/g,"_");
@@ -579,19 +579,19 @@ async function loadResume() {
  setFormData(data.resume_data);
 
  if (data.photo_path) {
-  $("existingPhoto").textContent = "आधीचा फोटो अपलोड केलेला आहे. नवीन फोटो निवडल्यास तो बदलला जाईल.";
+  $("existingPhoto").textContent = "A photograph has already been uploaded. Upload a new photograph if you wish to replace it.";
  }
 
  if (data.document_paths?.resume) {
-  $("existingResume").textContent = "आधीचा Resume अपलोड केलेला आहे. नवीन PDF निवडल्यास तो बदलला जाईल.";
+  $("existingResume").textContent = "A resume has already been uploaded. Upload a new PDF file if you wish to replace it.";
  }
 
  if (data.document_paths?.certificates?.length) {
   $("existingDocuments").textContent =
-   "आधीची प्रमाणपत्रे: " + data.document_paths.certificates.length + " फाइल्स";
+   "Previously uploaded certificates: " + data.document_paths.certificates.length + " files";
  }
 
- showMessage("आपला आधीचा Resume लोड झाला आहे. आवश्यक बदल करून पुन्हा Submit करू शकता.");
+ showMessage("Your previously saved resume has been loaded. You can make the necessary changes and submit it again.");
 }
 
 onAuthStateChanged(auth, async user => {
@@ -608,7 +608,7 @@ onAuthStateChanged(auth, async user => {
   await loadResume();
  } catch (error) {
   console.error(error);
-  showMessage("Resume लोड करताना अडचण आली: " + error.message,true);
+  showMessage("Unable to load your resume: " + error.message,true);
  }
 });
 
@@ -617,22 +617,22 @@ $("resumeForm").addEventListener("submit", async event => {
  hideMessage();
 
  if (!currentUser) {
-  showMessage("कृपया आधी Login करा.",true);
+  showMessage("Please log in before submitting your resume.",true);
   return;
  }
 
  if (!$("declaration").checked) {
-  showMessage("कृपया Declaration स्वीकारा.",true);
+  showMessage("Please accept the declaration before submitting.",true);
   return;
  }
 
  if (!$("category").value || !$("post").value) {
-  showMessage("कृपया Career Category आणि Position निवडा.",true);
+  showMessage("Please select your Career Category and Position.",true);
   return;
  }
 
  if (!savedResume && !$("photo").files[0]) {
-  showMessage("कृपया आपला Passport-size Photograph अपलोड करा.",true);
+  showMessage("Please upload your passport-size photograph.",true);
   return;
  }
 
@@ -641,12 +641,12 @@ $("resumeForm").addEventListener("submit", async event => {
 
  if (resumeFile && (resumeFile.type !== "application/pdf" ||
                     resumeFile.size > 5 * 1024 * 1024)) {
-  showMessage("Resume PDF स्वरूपात आणि 5 MB पेक्षा कमी असावा.",true);
+  showMessage("Your resume must be in PDF format and must not exceed 5 MB.",true);
   return;
  }
 
  if (certificateFiles.length > 5) {
-  showMessage("जास्तीत जास्त 5 प्रमाणपत्र फाइल्स अपलोड करा.",true);
+  showMessage("You can upload a maximum of 5 certificate files at a time.",true);
   return;
  }
 
@@ -654,7 +654,7 @@ $("resumeForm").addEventListener("submit", async event => {
   !["application/pdf","image/jpeg","image/png"].includes(file.type) ||
   file.size > 5 * 1024 * 1024
  )) {
-  showMessage("प्रत्येक प्रमाणपत्र PDF/JPG/PNG आणि 5 MB पेक्षा कमी असावे.",true);
+  showMessage("Each certificate must be in PDF, JPG or PNG format and must not exceed 5 MB.",true);
   return;
  }
 
@@ -667,7 +667,7 @@ $("resumeForm").addEventListener("submit", async event => {
 
   if (tokenResult.claims.role !== "authenticated") {
    throw new Error(
-    "आपल्या खात्याची सुरक्षित Upload Permission अद्याप सक्रिय नाही. कृपया Admin कडून Account Permission Update करून घ्या."
+    "Secure upload permission is not yet enabled for your account. Please contact the administrator to update your account permissions."
    );
   }
 
@@ -735,12 +735,12 @@ $("resumeForm").addEventListener("submit", async event => {
   savedResume = payload;
 
   showMessage(
-   "आपला Teaching Resume यशस्वीरीत्या Submit झाला आहे. आपला Submission Status: Submitted."
+   "Your Teaching Resume has been submitted successfully.\n\nSubmission Status: Submitted.\n\nThank you for submitting your Teaching Resume to Aditya Gurukul Careers."
   );
 
  } catch (error) {
   console.error(error);
-  showMessage("Submit करताना अडचण आली: " + error.message,true);
+  showMessage("An error occurred while submitting your resume: " + error.message,true);
  } finally {
   button.disabled = false;
   button.textContent = "Submit My Resume";
