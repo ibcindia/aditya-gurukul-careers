@@ -1,0 +1,491 @@
+
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Teaching Resumes | AG Careers Admin</title>
+<link rel="stylesheet" href="../assets/css/style.css">
+<style>
+.toolbar{display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap}
+.search{width:100%;max-width:400px;padding:12px;border:1px solid #ccc;border-radius:7px}
+table{width:100%;border-collapse:collapse;min-width:850px}
+th,td{padding:12px;border-bottom:1px solid #ddd;text-align:left;vertical-align:top}
+th{background:#f5f7f8}
+.wrap{overflow-x:auto}
+.msg{padding:14px;background:#eff6ff;color:#1e40af;border-radius:8px;margin:15px 0}
+.error{background:#fef2f2;color:#991b1b}
+.detailgrid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+.detail{padding:10px;background:#f5f7f8;border-radius:7px;overflow-wrap:anywhere}
+.detail strong{display:block;font-size:12px;color:#64748b}
+.links{display:flex;gap:15px;flex-wrap:wrap;margin:15px 0}
+.links a{color:#2563eb;font-weight:600}
+button,select{padding:8px;border-radius:6px;cursor:pointer}
+button{background:#173b35;color:white;border:0}
+@media(max-width:650px){.detailgrid{grid-template-columns:1fr}}
+</style>
+</head>
+
+<body class="adminbody">
+<div class="adminlayout">
+
+<aside class="sidebar">
+<a class="brand" href="./dashboard.html">
+<span class="brandmark">AG</span>
+<span>ADITYA GURUKUL
+<small style="color:#b6c7d3">ADMIN PORTAL</small>
+</span>
+</a>
+
+<a class="side-link" href="./dashboard.html">Dashboard</a>
+<a class="side-link" href="./candidates.html">Candidates</a>
+<a class="side-link" href="./jobs.html">Jobs</a>
+<a class="side-link" href="./applications.html">Applications</a>
+<a class="side-link active" href="./teaching-resumes.html">Teaching Resumes</a>
+<a class="side-link" href="./contact-messages.html">Contact Messages</a>
+<a class="side-link" href="./settings.html">Settings</a>
+<a class="side-link" href="../index.html">← View website</a>
+<a class="side-link" href="#" id="logoutButton">Sign out</a>
+</aside>
+
+<main class="adminmain">
+<div class="kicker">Administration</div>
+<h1>Teaching Resumes</h1>
+<p id="adminWelcome" class="muted">Verifying administrator access...</p>
+
+<section class="panel">
+<div class="toolbar">
+<div>
+<h3>Submitted Teaching Resumes</h3>
+<p id="resumeCount" class="muted">Loading records...</p>
+</div>
+<button id="refreshButton" type="button">Refresh</button>
+</div>
+
+<input class="search" id="resumeSearch" type="search"
+placeholder="Search name, email, mobile, category or post...">
+</section>
+
+<div id="pageMessage" class="msg">Loading resumes...</div>
+
+<section class="panel wrap">
+<table>
+<thead>
+<tr>
+<th>Candidate</th>
+<th>Contact</th>
+<th>Category / Position</th>
+<th>Submitted</th>
+<th>Status</th>
+<th>Action</th>
+</tr>
+</thead>
+<tbody id="resumeTable">
+<tr><td colspan="6">Loading...</td></tr>
+</tbody>
+</table>
+</section>
+
+<section class="panel" id="resumeDetails" hidden>
+<h2>Resume Details</h2>
+<div id="detailContent"></div>
+<button type="button" id="closeDetails">Close Details</button>
+</section>
+
+<div class="notice">
+Candidate resumes and uploaded documents are private.
+Access is restricted to the verified administrator account.
+</div>
+</main>
+</div>
+
+<script src="../assets/js/main.js"></script>
+
+<script type="module">
+import { auth, db } from "../assets/js/firebase.js";
+import { supabase } from "../assets/js/supabase.js";
+
+import {
+ onAuthStateChanged,
+ signOut
+} from "https://www.gstatic.com/firebasejs/13.4.0/firebase-auth.js";
+
+import {
+ doc,
+ getDoc
+} from "https://www.gstatic.com/firebasejs/13.4.0/firebase-firestore.js";
+
+const ADMIN_EMAIL = "ibcindiaceo@gmail.com";
+
+const allowedRoles = [
+ "super_admin","admin","recruitment_manager",
+ "exam_controller","content_manager","viewer"
+];
+
+const statuses = [
+ "Submitted","Under Review","Shortlisted","Rejected"
+];
+
+const $ = id => document.getElementById(id);
+
+let resumes = [];
+
+document.body.style.display = "none";
+
+function showMessage(message,error=false) {
+ $("pageMessage").textContent = message;
+ $("pageMessage").className = error ? "msg error" : "msg";
+ $("pageMessage").style.display = "block";
+}
+
+function hideMessage() {
+ $("pageMessage").style.display = "none";
+}
+
+function formatDate(value) {
+ if(!value) return "—";
+ const d = new Date(value);
+ return isNaN(d.getTime()) ? "—" : d.toLocaleString("en-IN");
+}
+
+function makeCell(value) {
+ const td = document.createElement("td");
+ td.textContent = value || "—";
+ return td;
+}
+
+function getFiltered() {
+ const term = $("resumeSearch").value.trim().toLowerCase();
+
+ return resumes.filter(r => [
+  r.full_name,r.email,r.mobile,r.category,r.desired_post,r.status
+ ].some(v => String(v || "").toLowerCase().includes(term)));
+}
+
+function renderRows() {
+ const body = $("resumeTable");
+ const list = getFiltered();
+
+ body.replaceChildren();
+
+ $("resumeCount").textContent =
+  "Showing " + list.length + " of " + resumes.length + " resume(s)";
+
+ if(!list.length) {
+  const tr = document.createElement("tr");
+  const td = document.createElement("td");
+  td.colSpan = 6;
+  td.textContent = "No teaching resumes found.";
+  tr.appendChild(td);
+  body.appendChild(tr);
+  return;
+ }
+
+ list.forEach(r => {
+  const tr = document.createElement("tr");
+
+  tr.appendChild(makeCell(r.full_name));
+
+  const contact = document.createElement("td");
+  contact.textContent = (r.email || "—") + "\n" + (r.mobile || "—");
+  tr.appendChild(contact);
+
+  tr.appendChild(makeCell(
+   (r.category || "—") + "\n" + (r.desired_post || "—")
+  ));
+
+  tr.appendChild(makeCell(formatDate(r.submitted_at)));
+
+  const statusCell = document.createElement("td");
+  const select = document.createElement("select");
+
+  statuses.forEach(s => {
+   const option = document.createElement("option");
+   option.value = s;
+   option.textContent = s;
+   select.appendChild(option);
+  });
+
+  select.value = statuses.includes(r.status) ? r.status : "Submitted";
+  statusCell.appendChild(select);
+
+  const save = document.createElement("button");
+  save.type = "button";
+  save.textContent = "Save";
+  save.style.marginTop = "6px";
+
+  save.addEventListener("click", () => {
+   updateStatus(r,select.value,save);
+  });
+
+  statusCell.appendChild(document.createElement("br"));
+  statusCell.appendChild(save);
+  tr.appendChild(statusCell);
+
+  const action = document.createElement("td");
+  const view = document.createElement("button");
+  view.type = "button";
+  view.textContent = "View";
+
+  view.addEventListener("click",() => viewResume(r));
+
+  action.appendChild(view);
+  tr.appendChild(action);
+
+  body.appendChild(tr);
+ });
+}
+
+async function loadResumes() {
+ showMessage("Loading teaching resumes...");
+
+ const {data,error} = await supabase
+  .from("teaching_resumes")
+  .select("*")
+  .order("submitted_at",{ascending:false});
+
+ if(error) throw error;
+
+ resumes = data || [];
+
+ hideMessage();
+ renderRows();
+
+ if(!resumes.length) {
+  showMessage("No teaching resumes have been submitted yet.");
+ }
+}
+
+async function updateStatus(resume,newStatus,button) {
+ if(!statuses.includes(newStatus)) return;
+
+ if(!confirm(
+  "Change " + resume.full_name + "'s status to " + newStatus + "?"
+ )) return;
+
+ button.disabled = true;
+ button.textContent = "Saving...";
+
+ try {
+  const {error} = await supabase
+   .from("teaching_resumes")
+   .update({
+    status:newStatus,
+    updated_at:new Date().toISOString()
+   })
+   .eq("user_id",resume.user_id);
+
+  if(error) throw error;
+
+  resume.status = newStatus;
+  renderRows();
+  showMessage("Resume status updated successfully.");
+
+ } catch(error) {
+  console.error(error);
+  showMessage("Unable to update status: " + error.message,true);
+  button.disabled = false;
+  button.textContent = "Save";
+ }
+}
+
+function addDetail(container,label,value) {
+ const box = document.createElement("div");
+ box.className = "detail";
+
+ const title = document.createElement("strong");
+ title.textContent = label;
+
+ const valueText = document.createElement("span");
+ valueText.textContent =
+  value === null || value === undefined || value === ""
+  ? "—" : String(value);
+
+ box.append(title,valueText);
+ container.appendChild(box);
+}
+
+async function addFileLink(container,label,path) {
+ if(!path) return;
+
+ const {data,error} = await supabase.storage
+  .from("teaching-resumes")
+  .createSignedUrl(path,60);
+
+ if(error) {
+  console.error(error);
+  return;
+ }
+
+ const link = document.createElement("a");
+ link.href = data.signedUrl;
+ link.target = "_blank";
+ link.rel = "noopener";
+ link.textContent = label;
+
+ container.appendChild(link);
+}
+
+async function viewResume(r) {
+ $("detailContent").replaceChildren();
+
+ const grid = document.createElement("div");
+ grid.className = "detailgrid";
+
+ [
+  ["Full Name",r.full_name],
+  ["Email",r.email],
+  ["Mobile",r.mobile],
+  ["Career Category",r.category],
+  ["Desired Position",r.desired_post],
+  ["Status",r.status],
+  ["Submitted At",formatDate(r.submitted_at)]
+ ].forEach(([label,value]) => addDetail(grid,label,value));
+
+ const data = r.resume_data || {};
+
+ const fields = {
+  dob:"Date of Birth",
+  gender:"Gender",
+  maritalStatus:"Marital Status",
+  address:"Address",
+  city:"City",
+  district:"District",
+  state:"State",
+  pincode:"PIN Code",
+  experience:"Total Experience",
+  employment:"Employment Status",
+  qualification:"Highest Qualification",
+  institution:"Institution",
+  university:"University / Board",
+  passingYear:"Passing Year",
+  marks:"Percentage / CGPA",
+  otherQualifications:"Other Qualifications",
+  professionalQualification:"Professional Qualification",
+  leadershipExperience:"Leadership Experience",
+  teamSize:"Team Size Managed",
+  schoolAdminExperience:"School Administration Experience",
+  adminSkills:"Administrative Skills",
+  subjects:"Teaching Subjects",
+  classes:"Classes / Standards",
+  teachingMethodology:"Teaching Methodology",
+  technicalSkills:"Technical Skills",
+  softwareSkills:"Software Knowledge",
+  jobExpertise:"Job-related Expertise",
+  languages:"Languages Known",
+  previousInstitution:"Previous Institution",
+  previousDesignation:"Previous Designation",
+  experienceDuration:"Experience Duration",
+  lastSalary:"Last Drawn Monthly Salary",
+  responsibilities:"Roles & Responsibilities",
+  schoolType:"Preferred School Type",
+  preferredLocation:"Preferred Location",
+  expectedSalary:"Expected Monthly Salary",
+  joining:"Joining Availability"
+ };
+
+ Object.entries(fields).forEach(([key,label]) => {
+  if(data[key]) addDetail(grid,label,data[key]);
+ });
+
+ $("detailContent").appendChild(grid);
+
+ const links = document.createElement("div");
+ links.className = "links";
+
+ await addFileLink(links,"Open Passport Photograph",r.photo_path);
+ await addFileLink(links,"Open Resume PDF",r.document_paths?.resume);
+
+ const certificates = r.document_paths?.certificates || [];
+
+ for(let i=0;i<certificates.length;i++) {
+  await addFileLink(links,"Open Certificate " + (i+1),certificates[i]);
+ }
+
+ if(links.childElementCount) {
+  $("detailContent").appendChild(links);
+ } else {
+  const p = document.createElement("p");
+  p.textContent = "No uploaded document links are available.";
+  $("detailContent").appendChild(p);
+ }
+
+ $("resumeDetails").hidden = false;
+ $("resumeDetails").scrollIntoView({behavior:"smooth"});
+}
+
+$("resumeSearch").addEventListener("input",renderRows);
+
+$("refreshButton").addEventListener("click",async() => {
+ try {
+  await loadResumes();
+ } catch(error) {
+  showMessage("Unable to load resumes: " + error.message,true);
+ }
+});
+
+$("closeDetails").addEventListener("click",() => {
+ $("resumeDetails").hidden = true;
+});
+
+$("logoutButton").addEventListener("click",async event => {
+ event.preventDefault();
+ await signOut(auth);
+ window.location.replace("../login.html");
+});
+
+onAuthStateChanged(auth,async user => {
+ if(!user) {
+  window.location.replace("../login.html");
+  return;
+ }
+
+ try {
+  if(
+   (user.email || "").toLowerCase() !== ADMIN_EMAIL ||
+   !user.emailVerified
+  ) {
+   document.body.style.display = "";
+   showMessage(
+    "Access denied. Please sign in with the verified administrator email account.",
+    true
+   );
+   return;
+  }
+
+  const adminSnap = await getDoc(doc(db,"admins",user.uid));
+
+  if(!adminSnap.exists()) {
+   window.location.replace("../login.html");
+   return;
+  }
+
+  const adminData = adminSnap.data();
+
+  if(
+   adminData.status !== "active" ||
+   !allowedRoles.includes(adminData.role)
+  ) {
+   window.location.replace("../login.html");
+   return;
+  }
+
+  $("adminWelcome").textContent =
+   "Welcome, " + (adminData.fullName || user.displayName || "Administrator");
+
+  document.body.style.display = "";
+
+  await loadResumes();
+
+ } catch(error) {
+  console.error(error);
+  document.body.style.display = "";
+  showMessage(
+   "Unable to verify administrator access or load resumes: " + error.message,
+   true
+  );
+ }
+});
+</script>
+</body>
+</html>
